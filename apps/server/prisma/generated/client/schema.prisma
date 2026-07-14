@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Admin {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  // Relations
+  competitions Competition[]
+}
+
+model PlayerSession {
+  id            String   @id @default(uuid())
+  sessionToken  String   @unique
+  name          String
+  scholarNumber String
+  course        String
+  semester      String
+  avatarId      String
+  createdAt     DateTime @default(now())
+  lastSeenAt    DateTime @default(now())
+
+  // Relations
+  participations CompetitionParticipant[]
+}
+
+model Competition {
+  id          String    @id @default(uuid())
+  name        String
+  roomCode    String    @unique
+  language    String // "EN" or "HI"
+  gameMode    String // "RACE", "SPRINT", "ACCURACY"
+  difficulty  String // "EASY", "MEDIUM", "HARD"
+  duration    Int? // in seconds
+  paragraphId String
+  status      String // "DRAFT", "LOBBY_OPEN", "COUNTDOWN", "ACTIVE", "PAUSED", "FINISHED", "CANCELLED"
+  createdBy   String
+  startAt     DateTime?
+  endedAt     DateTime?
+  createdAt   DateTime  @default(now())
+
+  // Relations
+  admin        Admin                    @relation(fields: [createdBy], references: [id])
+  paragraph    Paragraph                @relation(fields: [paragraphId], references: [id])
+  participants CompetitionParticipant[]
+  results      Result[]
+}
+
+model CompetitionParticipant {
+  id               String    @id @default(uuid())
+  competitionId    String
+  playerSessionId  String
+  ready            Boolean   @default(false)
+  connectionStatus String // "ONLINE", "OFFLINE"
+  joinedAt         DateTime  @default(now())
+  finishedAt       DateTime?
+
+  // Relations
+  competition   Competition   @relation(fields: [competitionId], references: [id])
+  playerSession PlayerSession @relation(fields: [playerSessionId], references: [id])
+  results       Result[]
+
+  @@unique([competitionId, playerSessionId])
+}
+
+model Paragraph {
+  id         String   @id @default(uuid())
+  title      String
+  content    String
+  language   String // "EN" or "HI"
+  difficulty String // "EASY", "MEDIUM", "HARD"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  competitions Competition[]
+}
+
+model Result {
+  id                   String   @id @default(uuid())
+  competitionId        String
+  participantId        String
+  grossWpm             Int
+  netWpm               Int
+  cpm                  Int
+  accuracy             Float
+  errors               Int
+  completionPercentage Float
+  finalRank            Int?
+  finishTime           Int? // Time taken in ms
+  createdAt            DateTime @default(now())
+
+  // Relations
+  competition Competition            @relation(fields: [competitionId], references: [id])
+  participant CompetitionParticipant @relation(fields: [participantId], references: [id])
+}
