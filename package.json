@@ -10,5 +10,8 @@
     "dev": "npm run dev --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
     "install:all": "npm install"
+  },
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "^1.32.0"
   }
 }
