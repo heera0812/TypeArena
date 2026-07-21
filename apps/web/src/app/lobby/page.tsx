@@ -53,14 +53,26 @@ function LobbyContent() {
   const [localStatus, setLocalStatus] = useState<CompStatus>("LOBBY_OPEN");
   const [countdown, setCountdown] = useState(4);
   const [myParticipantId, setMyParticipantId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startAtRef = useRef<number | null>(null);
 
+  useEffect(() => {
+    const adminToken = localStorage.getItem("typearena_admin_token");
+    if (adminToken) {
+      setIsAdmin(true);
+    }
+  }, []);
+
   // ── Load competition + paragraph ──
   useEffect(() => {
     if (!competitionId) { router.push("/register"); return; }
+    if (!isSpectator && !localStorage.getItem("typearena_session")) {
+      router.push(`/register?competitionId=${competitionId}`);
+      return;
+    }
 
     fetch(`${API_URL}/api/competitions/${competitionId}`)
       .then(r => r.json())
@@ -185,13 +197,28 @@ function LobbyContent() {
   };
 
   const handleFinish = useCallback(() => {
-    if (hasFinished || !myParticipantId) return;
+    if (hasFinished) return;
     setIsActive(false);
     setHasFinished(true);
     if (timerRef.current) clearInterval(timerRef.current);
-    socket?.emit("game:finish", { competitionId, participantId: myParticipantId });
-    setTimeout(() => router.push(`/results?competitionId=${competitionId}`), 1500);
-  }, [hasFinished, myParticipantId, competitionId, router]);
+    
+    // Find participant ID if state wasn't populated yet
+    let partId = myParticipantId;
+    if (!partId) {
+      const myToken = typeof window !== "undefined" ? localStorage.getItem("typearena_session") : null;
+      const me = players.find(p => p.playerSession?.sessionToken === myToken);
+      if (me) partId = me.id;
+    }
+
+    if (partId) {
+      socket?.emit("game:finish", { competitionId, participantId: partId });
+    }
+
+    // Auto-redirect to results page
+    setTimeout(() => {
+      router.push(`/results?competitionId=${competitionId}`);
+    }, 2000);
+  }, [hasFinished, myParticipantId, players, competitionId, router]);
 
   const handleReady = () => {
     const myToken = localStorage.getItem("typearena_session");
@@ -236,8 +263,8 @@ function LobbyContent() {
       });
     }
 
-    // Check completion (full match)
-    if (val === targetText) {
+    // Check completion (reached length limit)
+    if (typedGraphemes.length >= targetGraphemes.length && targetGraphemes.length > 0) {
       handleFinish();
     }
   };
@@ -264,92 +291,112 @@ function LobbyContent() {
     <div className={`w-full min-h-[85vh] flex flex-col items-center justify-start pt-8 pb-16 px-4 transition-colors duration-700 ${isDarkArena ? "bg-[#071A2F]" : ""}`}>
 
       {/* Stats Bar */}
-      <div className="flex justify-center items-center gap-4 md:gap-10 w-full max-w-5xl mb-8">
-        <div className="bg-white/10 backdrop-blur-md rounded-xl px-6 py-4 flex flex-col items-center border border-white/10 min-w-[100px]">
-          <span className="text-[#FFB800] text-3xl md:text-4xl font-extrabold tracking-tighter">{wpm}</span>
-          <span className="text-white/70 text-[9px] uppercase font-bold tracking-widest mt-1">NET WPM</span>
+      <div className="flex justify-center items-center gap-4 md:gap-8 w-full max-w-5xl mb-8">
+        <div className="bg-white rounded-2xl px-6 py-4 flex flex-col items-center shadow-xl shadow-blue-500/5 border border-slate-100 min-w-[110px]">
+          <span className="text-[#1d61e8] text-3xl md:text-4xl font-black">{wpm}</span>
+          <span className="text-slate-400 text-[9px] uppercase font-black tracking-wider mt-1">NET WPM</span>
         </div>
-        <div className="bg-white/10 backdrop-blur-md rounded-xl px-6 py-4 flex flex-col items-center border border-white/10 min-w-[100px]">
-          <span className="text-white text-3xl md:text-4xl font-extrabold tracking-tighter">{accuracy}%</span>
-          <span className="text-white/70 text-[9px] uppercase font-bold tracking-widest mt-1">ACCURACY</span>
+        <div className="bg-white rounded-2xl px-6 py-4 flex flex-col items-center shadow-xl shadow-blue-500/5 border border-slate-100 min-w-[110px]">
+          <span className="text-slate-900 text-3xl md:text-4xl font-black">{accuracy}%</span>
+          <span className="text-slate-400 text-[9px] uppercase font-black tracking-wider mt-1">ACCURACY</span>
         </div>
         {timeLeft !== null && (
-          <div className={`bg-white/10 backdrop-blur-md rounded-xl px-6 py-4 flex flex-col items-center border min-w-[100px] ${timeLeft <= 10 ? "border-red-400 animate-pulse" : "border-white/10"}`}>
-            <span className={`text-3xl md:text-4xl font-extrabold tracking-tighter ${timeLeft <= 10 ? "text-red-400" : "text-white"}`}>{timeLeft}s</span>
-            <span className="text-white/70 text-[9px] uppercase font-bold tracking-widest mt-1">TIME LEFT</span>
+          <div className={`bg-white rounded-2xl px-6 py-4 flex flex-col items-center shadow-xl border min-w-[110px] ${timeLeft <= 10 ? "border-red-400 animate-pulse text-red-500" : "border-slate-100 text-slate-900"}`}>
+            <span className="text-3xl md:text-4xl font-black">{timeLeft}s</span>
+            <span className="text-slate-400 text-[9px] uppercase font-black tracking-wider mt-1">TIME LEFT</span>
           </div>
         )}
-        <div className="bg-white/10 backdrop-blur-md rounded-xl px-6 py-4 flex flex-col items-center border border-white/10 min-w-[100px]">
-          <span className={`text-xs font-black px-2 py-1 rounded uppercase tracking-wider ${
-            localStatus === "LOBBY_OPEN" ? "bg-blue-500 text-white" :
-            localStatus === "COUNTDOWN" ? "bg-yellow-400 text-gray-900" :
-            localStatus === "ACTIVE" ? "bg-green-500 text-white" :
-            localStatus === "PAUSED" ? "bg-orange-400 text-white" :
-            localStatus === "FINISHED" ? "bg-gray-500 text-white" : "bg-gray-400 text-white"
+        <div className="bg-white rounded-2xl px-6 py-4 flex flex-col items-center shadow-xl shadow-blue-500/5 border border-slate-100 min-w-[110px]">
+          <span className={`text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider ${
+            localStatus === "LOBBY_OPEN" ? "bg-blue-100 text-blue-700" :
+            localStatus === "COUNTDOWN" ? "bg-amber-100 text-amber-700" :
+            localStatus === "ACTIVE" ? "bg-emerald-100 text-emerald-700" :
+            localStatus === "PAUSED" ? "bg-orange-100 text-orange-700" :
+            localStatus === "FINISHED" ? "bg-purple-100 text-purple-700" : "bg-slate-100 text-slate-600"
           }`}>{localStatus.replace("_", " ")}</span>
-          <span className="text-white/70 text-[9px] uppercase font-bold tracking-widest mt-1">STATUS</span>
+          <span className="text-slate-400 text-[9px] uppercase font-black tracking-wider mt-1">STATUS</span>
         </div>
       </div>
 
       <div className="w-full max-w-5xl space-y-6">
 
         {/* Race Track */}
-        <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-6">
-          <div className="flex justify-between items-center mb-5">
-            <h3 className="text-white font-bold uppercase tracking-wider text-sm">
-              {isSpectator ? "👁 Live Spectator View" : "🏁 Live Race Track"}
-            </h3>
-            <span className="text-white/40 text-xs font-mono">{players.length} player{players.length !== 1 ? "s" : ""}</span>
+        <div className="w-full bg-white border border-slate-100 rounded-3xl p-6 shadow-xl shadow-blue-500/5">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🏁</span>
+              <h3 className="text-slate-900 font-black uppercase tracking-wider text-sm">
+                {isSpectator ? "👁 Live Spectator View" : "🏁 Live Race Track"}
+              </h3>
+            </div>
+            <span className="text-slate-500 text-xs font-semibold bg-slate-100 px-3 py-1 rounded-full">{players.length} player{players.length !== 1 ? "s" : ""} racing</span>
           </div>
-          <div className="space-y-7">
+          <div className="space-y-6">
             {players.length === 0 ? (
-              <div className="text-white/30 text-sm text-center py-4">Waiting for players to join...</div>
+              <div className="text-white/30 text-sm text-center py-6">Waiting for players to join...</div>
             ) : players.map((p: any) => (
               <div key={p.id} className="relative">
-                <div className="relative w-full h-7 bg-white/10 rounded-full overflow-visible">
+                <div className="flex items-center justify-between text-xs text-white/70 mb-1 px-1">
+                  <div className="flex items-center gap-2 font-mono">
+                    <span className="font-bold text-white">{p.playerSession?.name || "Player"}</span>
+                    {p.ready && localStatus === "LOBBY_OPEN" && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-green-500 text-white">READY</span>
+                    )}
+                    {p.finishedAt && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#FFB800] text-gray-900 animate-bounce">
+                        🏆 FINISHED #{p.finalRank || "–"}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 font-mono">
+                    <span className="text-[#FFB800] font-bold">{p.netWpm || 0} WPM</span>
+                    {p.accuracy && <span className="text-white/40">{Math.round(p.accuracy)}%</span>}
+                  </div>
+                </div>
+
+                <div className="race-lane w-full h-8 bg-white/10 rounded-full overflow-visible relative flex items-center px-1 border border-white/10">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-[#075EA8]/70 to-[#075EA8] rounded-full"
-                    animate={{ width: `${Math.max(0, Math.min(100, p.progress || 0))}%` }}
-                    transition={{ duration: 0.4, ease: "linear" }}
+                    className="h-6 bg-gradient-to-r from-[#075EA8] via-[#0088ff] to-[#FFB800] rounded-full relative"
+                    animate={{ width: `${Math.max(2, Math.min(100, p.progress || 0))}%` }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
                   />
                   <motion.div
-                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-10 w-10 bg-white rounded-full shadow-lg border-2 border-[#FFB800] flex items-center justify-center text-xl z-10"
-                    animate={{ left: `${Math.max(2, Math.min(98, p.progress || 0))}%` }}
-                    transition={{ duration: 0.4, ease: "linear" }}
+                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-11 w-11 bg-white rounded-full shadow-xl border-2 border-[#FFB800] flex items-center justify-center text-2xl z-10 cursor-pointer animate-avatar-bounce"
+                    animate={{ left: `${Math.max(4, Math.min(96, p.progress || 0))}%` }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
                   >
                     {p.playerSession?.avatarId || "👤"}
                   </motion.div>
-                </div>
-                <div className="flex items-center gap-2 mt-1 ml-1">
-                  <span className="text-xs text-white/60 font-mono">{p.playerSession?.name || "Player"}</span>
-                  <span className="text-xs text-[#FFB800] font-bold">{p.netWpm || 0} WPM</span>
-                  {p.accuracy && <span className="text-xs text-white/40">{Math.round(p.accuracy)}%</span>}
-                  {localStatus === "LOBBY_OPEN" && (
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${p.ready ? "bg-green-500 text-white" : "bg-red-400 text-white"}`}>
-                      {p.ready ? "READY" : "NOT READY"}
-                    </span>
-                  )}
-                  {p.finishedAt && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#FFB800] text-gray-900">FINISHED #{p.finalRank || "–"}</span>
-                  )}
+                  <span className="finish-flag">🏁</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
+        {/* Spectator Paragraph view */}
+        {isSpectator && targetText && (
+          <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6 text-white/80 animate-fade-in">
+            <h4 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-3">Target Paragraph</h4>
+            <p className={`leading-relaxed ${language === "HI" ? "font-devanagari text-xl" : "font-mono text-sm md:text-base"}`}>
+              {targetText}
+            </p>
+          </div>
+        )}
+
         {/* Typing Arena (players only) */}
         {!isSpectator && (
-          <div className={`bg-white rounded-2xl shadow-2xl relative overflow-hidden min-h-[280px] transition-all ${isDarkArena ? "ring-2 ring-[#FFB800]/60" : ""}`}>
+          <div className={`bg-white rounded-2xl shadow-2xl relative overflow-hidden min-h-[280px] transition-all ${isDarkArena ? "ring-4 ring-[#FFB800]/60 shadow-[0_0_50px_rgba(255,184,0,0.3)]" : ""}`}>
 
             {/* Lobby waiting overlay */}
             {localStatus === "LOBBY_OPEN" && (
-              <div className="absolute inset-0 bg-white/95 flex flex-col items-center justify-center z-20 gap-4">
-                <h2 className="text-2xl font-bold text-[#075EA8]">Lobby Open</h2>
+              <div className="absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center z-20 gap-4">
+                <div className="text-4xl animate-bounce">🏎️</div>
+                <h2 className="text-2xl font-black text-[#075EA8] uppercase tracking-wider">Lobby Open</h2>
                 <p className="text-gray-500 text-sm">Waiting for players... Admin will start the match.</p>
                 <button
                   onClick={handleReady}
-                  className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-full shadow-lg transition-transform active:scale-95 uppercase tracking-wider"
+                  className="px-8 py-3.5 bg-green-500 hover:bg-green-600 text-white font-black rounded-full shadow-lg transition-transform active:scale-95 uppercase tracking-wider flex items-center gap-2 hover:scale-105"
                 >
                   ✓ I&apos;m Ready
                 </button>
@@ -364,40 +411,80 @@ function LobbyContent() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 bg-[#044075]/95 flex flex-col items-center justify-center z-20"
+                  className="absolute inset-0 bg-[#044075]/95 backdrop-blur-lg flex flex-col items-center justify-center z-20"
                 >
                   <motion.div
                     key={countdown}
-                    initial={{ scale: 0.3, opacity: 0 }}
-                    animate={{ scale: 1.2, opacity: 1 }}
-                    exit={{ scale: 2, opacity: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="text-9xl font-black text-[#FFB800]"
+                    initial={{ scale: 0.2, rotate: -20, opacity: 0 }}
+                    animate={{ scale: 1.3, rotate: 0, opacity: 1 }}
+                    exit={{ scale: 2.5, opacity: 0 }}
+                    transition={{ duration: 0.3, type: "spring", stiffness: 400 }}
+                    className="text-9xl font-black text-[#FFB800] drop-shadow-[0_0_35px_rgba(255,184,0,0.8)]"
                   >
-                    {countdown > 0 ? countdown : "GO!"}
+                    {countdown > 0 ? countdown : "🏎️ GO!"}
                   </motion.div>
-                  <p className="text-white/60 mt-4 uppercase tracking-widest text-sm">Get Ready...</p>
+                  <p className="text-white/70 mt-6 uppercase tracking-[0.3em] font-extrabold text-sm animate-pulse">Get Ready to Type...</p>
                 </motion.div>
               )}
             </AnimatePresence>
 
             {/* Paused overlay */}
             {localStatus === "PAUSED" && (
-              <div className="absolute inset-0 bg-orange-900/80 flex flex-col items-center justify-center z-20">
-                <Pause className="w-16 h-16 text-white mb-4" />
-                <h2 className="text-2xl font-bold text-white">Game Paused</h2>
+              <div className="absolute inset-0 bg-orange-900/90 backdrop-blur-md flex flex-col items-center justify-center z-20">
+                <Pause className="w-16 h-16 text-white mb-4 animate-pulse" />
+                <h2 className="text-2xl font-bold text-white uppercase tracking-wider">Game Paused</h2>
                 <p className="text-white/60 mt-2">Admin has paused the competition.</p>
               </div>
             )}
 
             {/* Finished overlay */}
             {localStatus === "FINISHED" && (
-              <div className="absolute inset-0 bg-[#044075]/95 flex flex-col items-center justify-center z-20">
-                <Flag className="w-16 h-16 text-[#FFB800] mb-4" />
-                <h2 className="text-2xl font-bold text-white">Competition Finished!</h2>
-                <p className="text-white/60 mt-2">Redirecting to results...</p>
+              <div className="absolute inset-0 bg-[#044075]/95 backdrop-blur-md flex flex-col items-center justify-center z-20">
+                <Flag className="w-16 h-16 text-[#FFB800] mb-4 animate-bounce" />
+                <h2 className="text-3xl font-black text-white uppercase tracking-wider">Competition Finished!</h2>
+                <p className="text-white/60 mt-2">Redirecting to results scoreboard...</p>
               </div>
             )}
+
+            {/* Player completion modal overlay */}
+            <AnimatePresence>
+              {hasFinished && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center z-30 p-6 text-center"
+                >
+                  <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mb-2 animate-bounce">
+                    🎉
+                  </div>
+                  <h2 className="text-3xl font-black text-slate-900">Paragraph Completed!</h2>
+                  <p className="text-slate-500 text-sm mt-1 font-medium">Your submission has been recorded!</p>
+                  
+                  <div className="flex justify-center gap-6 my-5">
+                    <div className="bg-blue-50 border border-blue-100 rounded-2xl px-6 py-3 text-center min-w-[100px]">
+                      <div className="text-3xl font-black text-[#1d61e8]">{wpm}</div>
+                      <div className="text-[10px] font-black uppercase text-slate-400 mt-1">NET WPM</div>
+                    </div>
+                    <div className="bg-blue-50 border border-blue-100 rounded-2xl px-6 py-3 text-center min-w-[100px]">
+                      <div className="text-3xl font-black text-slate-900">{accuracy}%</div>
+                      <div className="text-[10px] font-black uppercase text-slate-400 mt-1">ACCURACY</div>
+                    </div>
+                  </div>
+
+                  <p className="text-slate-400 text-xs font-semibold animate-pulse mb-4">
+                    Redirecting to your match scoreboard...
+                  </p>
+
+                  <button
+                    onClick={() => router.push(`/results?competitionId=${competitionId}`)}
+                    className="px-8 py-3 bg-[#1d61e8] hover:bg-[#1a56db] text-white font-extrabold rounded-full shadow-lg shadow-blue-500/25 uppercase tracking-wide text-xs transition-transform active:scale-95"
+                  >
+                    View Scoreboard Now →
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Text display */}
             <div
@@ -424,7 +511,7 @@ function LobbyContent() {
         )}
 
         {/* Admin Controls */}
-        {isSpectator && (
+        {isSpectator && isAdmin && (
           <div className="bg-white/10 border border-white/10 rounded-2xl p-6">
             <h3 className="text-white font-bold uppercase tracking-wider text-sm mb-4">🎛 Admin Controls</h3>
             <div className="flex flex-wrap gap-3">

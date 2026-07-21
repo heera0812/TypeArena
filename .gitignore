@@ -32,3 +32,16 @@ coverage/
 # Operating system
 .DS_Store
 Thumbs.db
+
+# Prisma generated/temp files
+apps/server/prisma/generated/
+*.tmp
+*.bak
+
+# Node
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*

@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
 model Admin {
@@ -23,7 +23,7 @@ model PlayerSession {
   sessionToken  String   @unique
   name          String
   scholarNumber String
-  course        String
+  mandal        String
   semester      String
   avatarId      String
   createdAt     DateTime @default(now())

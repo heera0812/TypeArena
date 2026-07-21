@@ -17,12 +17,22 @@ export enum Difficulty {
   HARD = "HARD"
 }
 
+export enum Mandal {
+  VASHISTHA = "VASHISTHA",
+  VISHWAMITRA = "VISHWAMITRA",
+  ATRI = "ATRI",
+  GAUTAM = "GAUTAM",
+  BHARDWAJ = "BHARDWAJ",
+  JAMADAGNI = "JAMADAGNI",
+  KASHYAP = "KASHYAP"
+}
+
 // Shared Interfaces
 export interface PlayerProfile {
   id: string;
   displayName: string;
   scholarNumber: string;
-  course: string;
+  mandal: string;
   semester: number;
   avatarId: string;
 }

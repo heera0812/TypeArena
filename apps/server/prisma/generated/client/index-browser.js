@@ -130,7 +130,7 @@ exports.Prisma.PlayerSessionScalarFieldEnum = {
   sessionToken: 'sessionToken',
   name: 'name',
   scholarNumber: 'scholarNumber',
-  course: 'course',
+  mandal: 'mandal',
   semester: 'semester',
   avatarId: 'avatarId',
   createdAt: 'createdAt',

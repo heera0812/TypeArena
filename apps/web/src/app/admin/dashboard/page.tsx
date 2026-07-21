@@ -126,14 +126,56 @@ export default function AdminDashboard() {
     } catch (e) { console.error(e); }
   };
 
+  const [confirmCompId, setConfirmCompId] = useState<string | null>(null);
+  const [confirmParaId, setConfirmParaId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
   const deleteParagraph = async (id: string) => {
-    if (!confirm("Delete this paragraph? This cannot be undone.")) return;
+    if (confirmParaId !== id) {
+      setConfirmParaId(id);
+      setTimeout(() => setConfirmParaId(null), 4000);
+      return;
+    }
+    setConfirmParaId(null);
+    setDeleteError(null);
     try {
-      await fetch(`${API_URL}/api/paragraphs/${id}`, {
+      const res = await fetch(`${API_URL}/api/paragraphs/${id}`, {
         method: "DELETE", headers: getHeaders(), credentials: "include"
       });
+      if (!res.ok) {
+        const err = await res.json();
+        setDeleteError("Delete failed: " + (err.error || "Unknown error"));
+        return;
+      }
       fetchParagraphs();
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      setDeleteError("Delete request failed.");
+      console.error(e);
+    }
+  };
+
+  const deleteCompetition = async (id: string) => {
+    if (confirmCompId !== id) {
+      setConfirmCompId(id);
+      setTimeout(() => setConfirmCompId(null), 4000);
+      return;
+    }
+    setConfirmCompId(null);
+    setDeleteError(null);
+    try {
+      const res = await fetch(`${API_URL}/api/competitions/${id}`, {
+        method: "DELETE", headers: getHeaders(), credentials: "include"
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        setDeleteError("Delete failed: " + (err.error || "Unknown error"));
+        return;
+      }
+      fetchCompetitions();
+    } catch (e) {
+      setDeleteError("Delete request failed.");
+      console.error(e);
+    }
   };
 
   const statusBadge = (status: string) => {
@@ -157,18 +199,25 @@ export default function AdminDashboard() {
     <div className="w-full max-w-6xl mx-auto min-h-[85vh] flex flex-col pt-8 px-4">
 
       {/* Header */}
-      <div className="flex justify-between items-end mb-8 border-b border-white/10 pb-4">
+      <div className="flex justify-between items-end mb-8 border-b border-slate-200 pb-4">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-wide">Competition Control</h1>
-          <p className="text-white/50 text-sm mt-1">Manage competitions, lobbies, and paragraphs.</p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Competition Control</h1>
+          <p className="text-slate-500 text-sm mt-1 font-medium">Manage competitions, lobbies, and paragraphs.</p>
         </div>
         <button
           onClick={() => setShowCreate(!showCreate)}
-          className="px-6 py-2 text-sm font-bold bg-[#FFB800] hover:bg-[#F0AD00] text-gray-900 rounded-md shadow-md transition-transform active:scale-95"
+          className="px-6 py-2.5 text-xs font-black bg-[#1d61e8] hover:bg-[#1a56db] text-white rounded-full shadow-lg shadow-blue-500/20 transition-transform active:scale-95 uppercase tracking-wider"
         >
           + Create Competition
         </button>
       </div>
+
+      {deleteError && (
+        <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-600 text-sm font-bold flex justify-between items-center">
+          <span>{deleteError}</span>
+          <button onClick={() => setDeleteError(null)} className="text-red-400 hover:text-red-600">✕</button>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-3 mb-8">
@@ -176,7 +225,7 @@ export default function AdminDashboard() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-5 py-2 text-sm font-bold rounded-md transition-colors capitalize ${activeTab === tab ? "bg-white text-[#075EA8]" : "text-white hover:bg-white/10"}`}
+            className={`px-6 py-2.5 text-xs font-extrabold rounded-full transition-all capitalize ${activeTab === tab ? "bg-[#1d61e8] text-white shadow-md shadow-blue-500/20" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"}`}
           >
             {tab === "competitions" ? "🏁 Competitions" : "📝 Paragraph Library"}
           </button>
@@ -246,7 +295,21 @@ export default function AdminDashboard() {
                 <div key={comp.id} className="bg-white rounded-xl p-6 shadow-xl flex flex-col">
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="text-xl font-bold text-gray-900">{comp.name}</h3>
-                    {statusBadge(comp.status)}
+                    <div className="flex items-center gap-2">
+                      {statusBadge(comp.status)}
+                      <button
+                        onClick={() => deleteCompetition(comp.id)}
+                        className={`px-2 py-1 rounded transition-colors shrink-0 flex items-center gap-1 text-xs font-bold ${
+                          confirmCompId === comp.id
+                            ? "bg-red-600 text-white animate-pulse"
+                            : "text-red-500 hover:bg-red-50"
+                        }`}
+                        title={confirmCompId === comp.id ? "Click again to confirm delete" : "Delete Competition"}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        {confirmCompId === comp.id && <span>Confirm?</span>}
+                      </button>
+                    </div>
                   </div>
                   <p className="text-xs text-gray-500 font-mono mb-1">
                     CODE: <span className="font-black text-gray-800">{comp.roomCode}</span> · {comp.gameMode} · {comp.language} · {comp.duration}s
@@ -275,7 +338,7 @@ export default function AdminDashboard() {
                           <Trophy className="w-4 h-4" /> Results
                         </a>
                         <a
-                          href={`${API_URL}/api/reports/excel?competitionId=${comp.id}`}
+                          href={`${API_URL}/api/reports/excel?competitionId=${comp.id}&token=${typeof window !== "undefined" ? localStorage.getItem("typearena_admin_token") || "" : ""}`}
                           target="_blank"
                           className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm flex items-center gap-1"
                         >
@@ -382,10 +445,15 @@ export default function AdminDashboard() {
                       </button>
                       <button
                         onClick={() => deleteParagraph(item.id)}
-                        className="p-1.5 text-red-500 hover:bg-red-50 rounded"
-                        title="Delete"
+                        className={`px-2 py-1 rounded transition-colors shrink-0 flex items-center gap-1 text-xs font-bold ${
+                          confirmParaId === item.id
+                            ? "bg-red-600 text-white animate-pulse"
+                            : "text-red-500 hover:bg-red-50"
+                        }`}
+                        title={confirmParaId === item.id ? "Click again to confirm delete" : "Delete Paragraph"}
                       >
                         <Trash2 className="w-4 h-4" />
+                        {confirmParaId === item.id && <span>Confirm?</span>}
                       </button>
                     </div>
                   </div>

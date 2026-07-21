@@ -23,7 +23,7 @@ model PlayerSession {
   sessionToken  String   @unique
   name          String
   scholarNumber String
-  course        String
+  mandal        String
   semester      String
   avatarId      String
   createdAt     DateTime @default(now())

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Trophy, ChevronLeft, Download, FileSpreadsheet } from "lucide-react";
 import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { API_URL } from "@/lib/api";
 
 export default function Results() {
@@ -16,22 +16,83 @@ export default function Results() {
 }
 
 function ResultsContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const competitionId = searchParams.get("competitionId");
 
   const [results, setResults] = useState<any[]>([]);
   const [competitionName, setCompetitionName] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [competitionStatus, setCompetitionStatus] = useState<string>("");
+
+  const [competitionsList, setCompetitionsList] = useState<any[]>([]);
+  const [selectedCompId, setSelectedCompId] = useState<string>(competitionId || "");
+
+  useEffect(() => {
+    // Fetch finished competitions for history selector
+    fetch(`${API_URL}/api/competitions`)
+      .then(r => r.json())
+      .then(list => {
+        if (Array.isArray(list)) {
+          setCompetitionsList(list.filter((c: any) => c.status === "FINISHED"));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetchResults();
+    setSelectedCompId(competitionId || "");
+    
+    let interval: ReturnType<typeof setInterval> | null = null;
+    
     if (competitionId) {
+      // Initial fetch to get competition name and status
       fetch(`${API_URL}/api/competitions/${competitionId}`)
         .then(r => r.json())
-        .then(c => { if (c?.name) setCompetitionName(c.name); })
+        .then(c => {
+          if (c?.name) setCompetitionName(c.name);
+          if (c?.status) {
+            setCompetitionStatus(c.status);
+            // If match is not finished yet, start polling
+            if (c.status !== "FINISHED") {
+              interval = setInterval(() => {
+                fetchResults();
+                // Check if the competition status has updated to FINISHED
+                fetch(`${API_URL}/api/competitions/${competitionId}`)
+                  .then(res => res.json())
+                  .then(updatedComp => {
+                    if (updatedComp?.status) {
+                      setCompetitionStatus(updatedComp.status);
+                      if (updatedComp.status === "FINISHED") {
+                        if (interval) clearInterval(interval);
+                      }
+                    }
+                  })
+                  .catch(() => {});
+              }, 3000);
+            }
+          }
+        })
         .catch(() => {});
+    } else {
+      setCompetitionName("");
+      setCompetitionStatus("");
     }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [competitionId]);
+
+  const handleCompChange = (id: string) => {
+    setSelectedCompId(id);
+    if (id) {
+      router.push(`/results?competitionId=${id}`);
+    } else {
+      router.push(`/results`);
+    }
+  };
 
   const fetchResults = async () => {
     try {
@@ -51,7 +112,7 @@ function ResultsContent() {
           cpm: r.cpm,
           errors: r.errors,
           completion: Math.round(r.completionPercentage),
-          course: r.participant?.playerSession?.course || "–",
+          mandal: r.participant?.playerSession?.mandal || "–",
           semester: r.participant?.playerSession?.semester || "–",
           competition: r.competition?.name || "–",
           finishTime: r.finishTime ? `${(r.finishTime / 1000).toFixed(1)}s` : "–",
@@ -69,10 +130,12 @@ function ResultsContent() {
     if (results.length === 0) return;
     const headers = ["Rank", "Name", "Scholar No.", "Course", "Semester", "Net WPM", "Gross WPM", "CPM", "Accuracy%", "Errors", "Completion%", "Finish Time"];
     const rows = results.map(r => [
-      r.rank, r.name, r.scholarNumber, r.course, r.semester,
+      r.rank, r.name, r.scholarNumber, r.mandal, r.semester,
       r.wpm, r.grossWpm, r.cpm, r.accuracy, r.errors, r.completion, r.finishTime
     ]);
-    const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
+    const csv = [headers, ...rows]
+      .map(row => row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -83,9 +146,10 @@ function ResultsContent() {
   };
 
   const exportToExcel = () => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("typearena_admin_token") || "" : "";
     const url = competitionId
-      ? `${API_URL}/api/reports/excel?competitionId=${competitionId}`
-      : `${API_URL}/api/reports/excel`;
+      ? `${API_URL}/api/reports/excel?competitionId=${competitionId}&token=${token}`
+      : `${API_URL}/api/reports/excel?token=${token}`;
     window.open(url, "_blank");
   };
 
@@ -104,63 +168,114 @@ function ResultsContent() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-white tracking-wide uppercase flex items-center gap-3">
-            <Trophy className="w-8 h-8 text-[#FFB800]" />
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase flex items-center gap-3">
+            <Trophy className="w-8 h-8 text-amber-500" />
             {competitionName ? `${competitionName} — Results` : "Match Results"}
           </h1>
-          <p className="text-white/60 mt-1 text-sm">
+          <p className="text-slate-500 mt-1 text-sm font-medium">
             {competitionId ? `Competition ID: ${competitionId}` : "All results (latest)"} • {results.length} player{results.length !== 1 ? "s" : ""}
           </p>
         </div>
         <div className="flex flex-wrap gap-2 print:hidden">
-          <button onClick={exportToPDF} className="px-4 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10 text-sm flex items-center gap-2">
-            <Download className="w-4 h-4" /> PDF
+          <button onClick={exportToPDF} className="px-4 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 text-xs flex items-center gap-2 shadow-sm">
+            <Download className="w-3.5 h-3.5" /> PDF
           </button>
-          <button onClick={exportToCSV} className="px-4 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10 text-sm flex items-center gap-2">
-            <Download className="w-4 h-4" /> CSV
+          <button onClick={exportToCSV} className="px-4 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 text-xs flex items-center gap-2 shadow-sm">
+            <Download className="w-3.5 h-3.5" /> CSV
           </button>
-          <button onClick={exportToExcel} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm flex items-center gap-2 font-bold">
-            <FileSpreadsheet className="w-4 h-4" /> Excel
+          <button onClick={exportToExcel} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs flex items-center gap-2 font-bold shadow-md shadow-emerald-500/20">
+            <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
           </button>
           <Link href="/">
-            <button className="px-4 py-2 bg-[#FFB800] hover:bg-[#F0AD00] text-gray-900 font-bold rounded-lg text-sm flex items-center gap-2">
-              <ChevronLeft className="w-4 h-4" /> Home
+            <button className="px-4 py-2 bg-[#1d61e8] hover:bg-[#1a56db] text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-blue-500/20">
+              <ChevronLeft className="w-3.5 h-3.5" /> Home
             </button>
           </Link>
         </div>
       </div>
 
+      {competitionsList.length > 0 && (
+        <div className="mb-6 flex flex-wrap items-center gap-3 bg-white border border-slate-100 shadow-xl shadow-blue-500/5 rounded-2xl p-4 print:hidden">
+          <span className="text-slate-900 font-extrabold text-xs uppercase tracking-wider">Browse Match Records:</span>
+          <select
+            className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#1d61e8] min-w-[220px]"
+            value={selectedCompId}
+            onChange={e => handleCompChange(e.target.value)}
+          >
+            <option value="" className="text-slate-900">— Select a Competition —</option>
+            {competitionsList.map((c: any) => (
+              <option key={c.id} value={c.id} className="text-slate-900">
+                {c.name} ({new Date(c.createdAt).toLocaleDateString()})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {/* Top 3 Podium */}
       {results.length >= 3 && (
-        <div className="grid grid-cols-3 gap-4 mb-8 max-w-2xl mx-auto w-full">
-          {/* 2nd */}
-          <div className="flex flex-col items-center bg-white/5 border border-white/10 rounded-xl p-4 mt-6">
-            <div className="text-2xl mb-2">🥈</div>
-            <div className="text-white font-bold text-sm text-center">{results[1]?.name}</div>
-            <div className="text-[#FFB800] font-black text-2xl">{results[1]?.wpm}</div>
-            <div className="text-white/40 text-xs">WPM</div>
-          </div>
-          {/* 1st */}
-          <div className="flex flex-col items-center bg-[#FFB800]/10 border border-[#FFB800]/30 rounded-xl p-4 ring-2 ring-[#FFB800]/30">
-            <div className="text-3xl mb-2">🏆</div>
-            <div className="text-white font-bold text-sm text-center">{results[0]?.name}</div>
-            <div className="text-[#FFB800] font-black text-3xl">{results[0]?.wpm}</div>
-            <div className="text-white/40 text-xs">WPM</div>
-          </div>
-          {/* 3rd */}
-          <div className="flex flex-col items-center bg-white/5 border border-white/10 rounded-xl p-4 mt-6">
-            <div className="text-2xl mb-2">🥉</div>
-            <div className="text-white font-bold text-sm text-center">{results[2]?.name}</div>
-            <div className="text-[#FFB800] font-black text-2xl">{results[2]?.wpm}</div>
-            <div className="text-white/40 text-xs">WPM</div>
-          </div>
+        <div className="grid grid-cols-3 gap-4 mb-10 max-w-2xl mx-auto w-full items-end pt-6">
+          {/* 2nd Place */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-col items-center bg-white rounded-3xl p-5 border border-slate-100 text-center relative shadow-xl shadow-blue-500/5"
+          >
+            <div className="text-3xl mb-1">🥈</div>
+            <div className="text-slate-900 font-black text-base truncate w-full">{results[1]?.name}</div>
+            <div className="text-slate-400 text-xs font-mono mb-2">{results[1]?.mandal}</div>
+            <div className="w-full bg-slate-50 rounded-2xl py-2 border border-slate-100">
+              <div className="text-[#1d61e8] font-black text-3xl">{results[1]?.wpm}</div>
+              <div className="text-slate-400 text-[10px] uppercase font-black tracking-widest">NET WPM</div>
+            </div>
+            <div className="mt-3 text-xs text-slate-500 font-mono">Acc: {results[1]?.accuracy}%</div>
+          </motion.div>
+
+          {/* 1st Place - Winner */}
+          <motion.div
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+            className="flex flex-col items-center bg-gradient-to-b from-blue-50 via-white to-blue-50/50 border-2 border-[#1d61e8] rounded-3xl p-6 text-center relative shadow-2xl shadow-blue-500/20 -translate-y-4"
+          >
+            <div className="absolute -top-7 text-4xl animate-bounce">👑</div>
+            <div className="text-4xl mb-1 mt-2">🏆</div>
+            <div className="text-slate-900 font-black text-lg truncate w-full">{results[0]?.name}</div>
+            <div className="text-[#1d61e8] text-xs font-bold uppercase tracking-wider mb-3">{results[0]?.mandal}</div>
+            <div className="w-full bg-[#1d61e8] text-white rounded-2xl py-3 shadow-lg shadow-blue-500/30">
+              <div className="font-black text-4xl leading-none">{results[0]?.wpm}</div>
+              <div className="text-white/80 text-[10px] uppercase font-black tracking-widest mt-1">WINNER WPM</div>
+            </div>
+            <div className="mt-3 flex justify-between w-full text-xs text-slate-600 font-mono px-1 font-semibold">
+              <span>{results[0]?.accuracy}% Acc</span>
+              <span>{results[0]?.finishTime}</span>
+            </div>
+          </motion.div>
+
+          {/* 3rd Place */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-col items-center bg-white rounded-3xl p-5 border border-slate-100 text-center relative shadow-xl shadow-blue-500/5"
+          >
+            <div className="text-3xl mb-1">🥉</div>
+            <div className="text-slate-900 font-black text-base truncate w-full">{results[2]?.name}</div>
+            <div className="text-slate-400 text-xs font-mono mb-2">{results[2]?.mandal}</div>
+            <div className="w-full bg-slate-50 rounded-2xl py-2 border border-slate-100">
+              <div className="text-[#1d61e8] font-black text-3xl">{results[2]?.wpm}</div>
+              <div className="text-slate-400 text-[10px] uppercase font-black tracking-widest">NET WPM</div>
+            </div>
+            <div className="mt-3 text-xs text-slate-500 font-mono">Acc: {results[2]?.accuracy}%</div>
+          </motion.div>
         </div>
       )}
 
       {/* Full Results Table */}
-      <div className="bg-white rounded-2xl shadow-2xl overflow-hidden print:shadow-none">
+      <div className="bg-white rounded-3xl shadow-xl shadow-blue-500/5 overflow-hidden print:shadow-none border border-slate-100">
         {/* Table Header */}
-        <div className="grid grid-cols-12 gap-2 p-4 bg-[#075EA8] text-white text-xs font-bold uppercase tracking-wider">
+        <div className="grid grid-cols-12 gap-2 p-4 bg-[#1d61e8] text-white text-xs font-black uppercase tracking-wider">
           <div className="col-span-1 text-center">Rank</div>
           <div className="col-span-3">Player</div>
           <div className="col-span-2">Course</div>
@@ -175,7 +290,7 @@ function ResultsContent() {
         {/* Rows */}
         <div className="divide-y divide-gray-100">
           {loading ? (
-            <div className="p-12 text-center text-gray-400 animate-pulse">Loading results...</div>
+            <div className="p-12 text-center text-gray-400 animate-pulse font-medium">Loading match results...</div>
           ) : results.length === 0 ? (
             <div className="p-12 text-center text-gray-400">
               No results found.{competitionId ? " The competition may not have started yet." : ""}
@@ -183,22 +298,25 @@ function ResultsContent() {
           ) : results.map((player, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.04 * i }}
-              className={`grid grid-cols-12 gap-2 p-4 items-center transition-colors hover:bg-gray-50 ${player.rank <= 3 ? "bg-yellow-50/50" : ""}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 * i, ease: "easeOut" }}
+              className={`grid grid-cols-12 gap-2 p-4 items-center transition-all hover:bg-amber-50/50 ${player.rank === 1 ? "bg-amber-50/80 font-semibold" : player.rank <= 3 ? "bg-amber-50/30" : ""}`}
             >
               <div className="col-span-1 flex justify-center">{rankBadge(player.rank)}</div>
               <div className="col-span-3">
-                <div className="font-bold text-gray-900">{player.name}</div>
-                <div className="text-xs text-gray-400">{player.scholarNumber}</div>
+                <div className="font-extrabold text-gray-900 flex items-center gap-1.5">
+                  {player.name}
+                  {player.rank === 1 && <span className="text-xs">👑</span>}
+                </div>
+                <div className="text-xs text-gray-400 font-mono">{player.scholarNumber}</div>
               </div>
-              <div className="col-span-2 text-gray-600 text-sm">{player.course} <span className="text-gray-400 text-xs">({player.semester})</span></div>
-              <div className="col-span-1 text-center font-black text-[#075EA8] text-xl">{player.wpm}</div>
-              <div className="col-span-1 text-center font-bold text-gray-500">{player.cpm}</div>
-              <div className="col-span-1 text-center font-bold text-[#FFB800]">{player.accuracy}%</div>
-              <div className="col-span-1 text-center font-bold text-red-500">{player.errors}</div>
-              <div className="col-span-1 text-center font-bold text-green-600">{player.completion}%</div>
+              <div className="col-span-2 text-gray-600 text-sm font-medium">{player.mandal} <span className="text-gray-400 text-xs font-mono">({player.semester})</span></div>
+              <div className="col-span-1 text-center font-black text-[#075EA8] text-xl tabular-nums">{player.wpm}</div>
+              <div className="col-span-1 text-center font-bold text-gray-500 tabular-nums">{player.cpm}</div>
+              <div className="col-span-1 text-center font-bold text-[#FFB800] tabular-nums">{player.accuracy}%</div>
+              <div className="col-span-1 text-center font-bold text-red-500 tabular-nums">{player.errors}</div>
+              <div className="col-span-1 text-center font-bold text-green-600 tabular-nums">{player.completion}%</div>
               <div className="col-span-1 text-center text-gray-400 text-sm font-mono">{player.finishTime}</div>
             </motion.div>
           ))}

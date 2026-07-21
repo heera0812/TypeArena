@@ -60,27 +60,28 @@ export default function AdminLogin() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Card className="bg-white shadow-2xl border-none overflow-hidden rounded-xl">
-            <div className="h-1 w-full bg-[#FFB800]" />
-            <CardHeader className="space-y-2 pb-6 text-center">
-              <CardTitle className="text-2xl font-bold text-gray-900">Admin Console</CardTitle>
+          <Card className="bg-white shadow-xl shadow-blue-500/5 border border-slate-100 overflow-hidden rounded-3xl">
+            <div className="h-1.5 w-full bg-[#1d61e8]" />
+            <CardHeader className="space-y-2 pb-4 text-center">
+              <CardTitle className="text-2xl font-black text-slate-900">Admin Console</CardTitle>
+              <CardDescription className="text-xs font-medium text-slate-400">Sign in to manage competitions and paragraphs</CardDescription>
             </CardHeader>
 
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
                   <motion.div 
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    className="p-3 bg-red-50 border border-red-200 rounded-md flex items-start gap-2"
+                    className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2"
                   >
                     <p className="text-xs text-red-600 font-medium">{error}</p>
                   </motion.div>
                 )}
 
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label htmlFor="username" className="text-[10px] font-bold text-gray-700 uppercase tracking-wider">
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <label htmlFor="username" className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">
                       Username
                     </label>
                     <div className="relative">
@@ -88,15 +89,15 @@ export default function AdminLogin() {
                         id="username" 
                         placeholder="Enter admin username" 
                         required 
-                        className="h-10 border-gray-200 text-gray-900 focus-visible:ring-[#FFB800] bg-gray-50 rounded-md"
+                        className="h-11 border-slate-200 text-slate-900 focus-visible:ring-[#1d61e8] bg-slate-50 rounded-xl text-sm"
                         value={formData.username}
                         onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                       />
                     </div>
                   </div>
                   
-                  <div className="space-y-1.5">
-                    <label htmlFor="password" className="text-[10px] font-bold text-gray-700 uppercase tracking-wider">
+                  <div className="space-y-1">
+                    <label htmlFor="password" className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">
                       Password
                     </label>
                     <div className="relative">
@@ -105,14 +106,14 @@ export default function AdminLogin() {
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••" 
                         required 
-                        className="pr-10 h-10 border-gray-200 text-gray-900 focus-visible:ring-[#FFB800] bg-gray-50 rounded-md"
+                        className="pr-10 h-11 border-slate-200 text-slate-900 focus-visible:ring-[#1d61e8] bg-slate-50 rounded-xl text-sm"
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -123,7 +124,7 @@ export default function AdminLogin() {
                 <Button 
                   type="submit" 
                   disabled={isSubmitting || !formData.username || !formData.password}
-                  className="w-full h-10 text-sm font-bold bg-[#FFB800] hover:bg-[#F0AD00] text-gray-900 rounded-full shadow-md transition-all mt-4"
+                  className="w-full h-11 text-sm font-extrabold bg-[#1d61e8] hover:bg-[#1a56db] text-white rounded-full shadow-lg shadow-blue-500/25 transition-all mt-3 uppercase tracking-wide"
                 >
                   {isSubmitting ? "Loading..." : "Authenticate"}
                 </Button>

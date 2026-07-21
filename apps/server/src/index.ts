@@ -33,6 +33,9 @@ const requireAdmin = (req: any, res: any, next: any) => {
       token = parts[1];
     }
   }
+  if (!token && req.query.token) {
+    token = String(req.query.token);
+  }
   if (!token) return res.status(401).json({ error: "Unauthorized" });
   try {
     const decoded = jwt.decode(token, JWT_SECRET);
@@ -76,7 +79,7 @@ app.post("/api/players", async (req, res) => {
   const schema = z.object({
     name: z.string().min(2),
     scholarNumber: z.string().min(2),
-    course: z.string().min(2),
+    mandal: z.string(),
     semester: z.string().min(1),
     avatarId: z.string()
   });
@@ -131,11 +134,33 @@ app.patch("/api/paragraphs/:id", requireAdmin, async (req, res) => {
 });
 
 app.delete("/api/paragraphs/:id", requireAdmin, async (req, res) => {
+  const { id } = req.params;
   try {
-    await prisma.paragraph.delete({ where: { id: req.params.id } });
+    const linkedComps = await prisma.competition.findMany({ where: { paragraphId: id } });
+    for (const comp of linkedComps) {
+      await prisma.result.deleteMany({ where: { competitionId: comp.id } });
+      await prisma.competitionParticipant.deleteMany({ where: { competitionId: comp.id } });
+    }
+    await prisma.competition.deleteMany({ where: { paragraphId: id } });
+    await prisma.paragraph.delete({ where: { id } });
     res.json({ success: true });
   } catch (e) {
-    res.status(500).json({ error: "Delete failed" });
+    console.error("Delete paragraph error:", e);
+    res.status(500).json({ error: "Delete failed", details: String(e) });
+  }
+});
+
+app.delete("/api/competitions/:id", requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.result.deleteMany({ where: { competitionId: id } });
+    await prisma.competitionParticipant.deleteMany({ where: { competitionId: id } });
+    await prisma.competition.delete({ where: { id } });
+    io.to(id).emit("competition:deleted", { id });
+    res.json({ success: true });
+  } catch (e) {
+    console.error("Delete competition error:", e);
+    res.status(500).json({ error: "Delete failed", details: String(e) });
   }
 });
 
@@ -239,7 +264,7 @@ app.get("/api/reports/excel", requireAdmin, async (req, res) => {
       { header: "Rank", key: "rank", width: 8 },
       { header: "Name", key: "name", width: 22 },
       { header: "Scholar No.", key: "scholarNumber", width: 16 },
-      { header: "Course", key: "course", width: 16 },
+      { header: "Course", key: "mandal", width: 16 },
       { header: "Semester", key: "semester", width: 12 },
       { header: "Net WPM", key: "netWpm", width: 12 },
       { header: "Gross WPM", key: "grossWpm", width: 12 },
@@ -268,7 +293,7 @@ app.get("/api/reports/excel", requireAdmin, async (req, res) => {
         rank: r.finalRank ?? idx + 1,
         name: ps.name,
         scholarNumber: ps.scholarNumber,
-        course: ps.course,
+        mandal: ps.mandal,
         semester: ps.semester,
         netWpm: r.netWpm,
         grossWpm: r.grossWpm,

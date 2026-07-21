@@ -2549,7 +2549,7 @@ export namespace Prisma {
     sessionToken: string | null
     name: string | null
     scholarNumber: string | null
-    course: string | null
+    mandal: string | null
     semester: string | null
     avatarId: string | null
     createdAt: Date | null
@@ -2561,7 +2561,7 @@ export namespace Prisma {
     sessionToken: string | null
     name: string | null
     scholarNumber: string | null
-    course: string | null
+    mandal: string | null
     semester: string | null
     avatarId: string | null
     createdAt: Date | null
@@ -2573,7 +2573,7 @@ export namespace Prisma {
     sessionToken: number
     name: number
     scholarNumber: number
-    course: number
+    mandal: number
     semester: number
     avatarId: number
     createdAt: number
@@ -2587,7 +2587,7 @@ export namespace Prisma {
     sessionToken?: true
     name?: true
     scholarNumber?: true
-    course?: true
+    mandal?: true
     semester?: true
     avatarId?: true
     createdAt?: true
@@ -2599,7 +2599,7 @@ export namespace Prisma {
     sessionToken?: true
     name?: true
     scholarNumber?: true
-    course?: true
+    mandal?: true
     semester?: true
     avatarId?: true
     createdAt?: true
@@ -2611,7 +2611,7 @@ export namespace Prisma {
     sessionToken?: true
     name?: true
     scholarNumber?: true
-    course?: true
+    mandal?: true
     semester?: true
     avatarId?: true
     createdAt?: true
@@ -2696,7 +2696,7 @@ export namespace Prisma {
     sessionToken: string
     name: string
     scholarNumber: string
-    course: string
+    mandal: string
     semester: string
     avatarId: string
     createdAt: Date
@@ -2725,7 +2725,7 @@ export namespace Prisma {
     sessionToken?: boolean
     name?: boolean
     scholarNumber?: boolean
-    course?: boolean
+    mandal?: boolean
     semester?: boolean
     avatarId?: boolean
     createdAt?: boolean
@@ -2739,7 +2739,7 @@ export namespace Prisma {
     sessionToken?: boolean
     name?: boolean
     scholarNumber?: boolean
-    course?: boolean
+    mandal?: boolean
     semester?: boolean
     avatarId?: boolean
     createdAt?: boolean
@@ -2751,7 +2751,7 @@ export namespace Prisma {
     sessionToken?: boolean
     name?: boolean
     scholarNumber?: boolean
-    course?: boolean
+    mandal?: boolean
     semester?: boolean
     avatarId?: boolean
     createdAt?: boolean
@@ -2763,14 +2763,14 @@ export namespace Prisma {
     sessionToken?: boolean
     name?: boolean
     scholarNumber?: boolean
-    course?: boolean
+    mandal?: boolean
     semester?: boolean
     avatarId?: boolean
     createdAt?: boolean
     lastSeenAt?: boolean
   }
 
-  export type PlayerSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sessionToken" | "name" | "scholarNumber" | "course" | "semester" | "avatarId" | "createdAt" | "lastSeenAt", ExtArgs["result"]["playerSession"]>
+  export type PlayerSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sessionToken" | "name" | "scholarNumber" | "mandal" | "semester" | "avatarId" | "createdAt" | "lastSeenAt", ExtArgs["result"]["playerSession"]>
   export type PlayerSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     participations?: boolean | PlayerSession$participationsArgs<ExtArgs>
     _count?: boolean | PlayerSessionCountOutputTypeDefaultArgs<ExtArgs>
@@ -2788,7 +2788,7 @@ export namespace Prisma {
       sessionToken: string
       name: string
       scholarNumber: string
-      course: string
+      mandal: string
       semester: string
       avatarId: string
       createdAt: Date
@@ -3221,7 +3221,7 @@ export namespace Prisma {
     readonly sessionToken: FieldRef<"PlayerSession", 'String'>
     readonly name: FieldRef<"PlayerSession", 'String'>
     readonly scholarNumber: FieldRef<"PlayerSession", 'String'>
-    readonly course: FieldRef<"PlayerSession", 'String'>
+    readonly mandal: FieldRef<"PlayerSession", 'String'>
     readonly semester: FieldRef<"PlayerSession", 'String'>
     readonly avatarId: FieldRef<"PlayerSession", 'String'>
     readonly createdAt: FieldRef<"PlayerSession", 'DateTime'>
@@ -8371,7 +8371,7 @@ export namespace Prisma {
     sessionToken: 'sessionToken',
     name: 'name',
     scholarNumber: 'scholarNumber',
-    course: 'course',
+    mandal: 'mandal',
     semester: 'semester',
     avatarId: 'avatarId',
     createdAt: 'createdAt',
@@ -8561,7 +8561,7 @@ export namespace Prisma {
     sessionToken?: StringFilter<"PlayerSession"> | string
     name?: StringFilter<"PlayerSession"> | string
     scholarNumber?: StringFilter<"PlayerSession"> | string
-    course?: StringFilter<"PlayerSession"> | string
+    mandal?: StringFilter<"PlayerSession"> | string
     semester?: StringFilter<"PlayerSession"> | string
     avatarId?: StringFilter<"PlayerSession"> | string
     createdAt?: DateTimeFilter<"PlayerSession"> | Date | string
@@ -8574,7 +8574,7 @@ export namespace Prisma {
     sessionToken?: SortOrder
     name?: SortOrder
     scholarNumber?: SortOrder
-    course?: SortOrder
+    mandal?: SortOrder
     semester?: SortOrder
     avatarId?: SortOrder
     createdAt?: SortOrder
@@ -8590,7 +8590,7 @@ export namespace Prisma {
     NOT?: PlayerSessionWhereInput | PlayerSessionWhereInput[]
     name?: StringFilter<"PlayerSession"> | string
     scholarNumber?: StringFilter<"PlayerSession"> | string
-    course?: StringFilter<"PlayerSession"> | string
+    mandal?: StringFilter<"PlayerSession"> | string
     semester?: StringFilter<"PlayerSession"> | string
     avatarId?: StringFilter<"PlayerSession"> | string
     createdAt?: DateTimeFilter<"PlayerSession"> | Date | string
@@ -8603,7 +8603,7 @@ export namespace Prisma {
     sessionToken?: SortOrder
     name?: SortOrder
     scholarNumber?: SortOrder
-    course?: SortOrder
+    mandal?: SortOrder
     semester?: SortOrder
     avatarId?: SortOrder
     createdAt?: SortOrder
@@ -8621,7 +8621,7 @@ export namespace Prisma {
     sessionToken?: StringWithAggregatesFilter<"PlayerSession"> | string
     name?: StringWithAggregatesFilter<"PlayerSession"> | string
     scholarNumber?: StringWithAggregatesFilter<"PlayerSession"> | string
-    course?: StringWithAggregatesFilter<"PlayerSession"> | string
+    mandal?: StringWithAggregatesFilter<"PlayerSession"> | string
     semester?: StringWithAggregatesFilter<"PlayerSession"> | string
     avatarId?: StringWithAggregatesFilter<"PlayerSession"> | string
     createdAt?: DateTimeWithAggregatesFilter<"PlayerSession"> | Date | string
@@ -9024,7 +9024,7 @@ export namespace Prisma {
     sessionToken: string
     name: string
     scholarNumber: string
-    course: string
+    mandal: string
     semester: string
     avatarId: string
     createdAt?: Date | string
@@ -9037,7 +9037,7 @@ export namespace Prisma {
     sessionToken: string
     name: string
     scholarNumber: string
-    course: string
+    mandal: string
     semester: string
     avatarId: string
     createdAt?: Date | string
@@ -9050,7 +9050,7 @@ export namespace Prisma {
     sessionToken?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     scholarNumber?: StringFieldUpdateOperationsInput | string
-    course?: StringFieldUpdateOperationsInput | string
+    mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9063,7 +9063,7 @@ export namespace Prisma {
     sessionToken?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     scholarNumber?: StringFieldUpdateOperationsInput | string
-    course?: StringFieldUpdateOperationsInput | string
+    mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9076,7 +9076,7 @@ export namespace Prisma {
     sessionToken: string
     name: string
     scholarNumber: string
-    course: string
+    mandal: string
     semester: string
     avatarId: string
     createdAt?: Date | string
@@ -9088,7 +9088,7 @@ export namespace Prisma {
     sessionToken?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     scholarNumber?: StringFieldUpdateOperationsInput | string
-    course?: StringFieldUpdateOperationsInput | string
+    mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9100,7 +9100,7 @@ export namespace Prisma {
     sessionToken?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     scholarNumber?: StringFieldUpdateOperationsInput | string
-    course?: StringFieldUpdateOperationsInput | string
+    mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9576,7 +9576,7 @@ export namespace Prisma {
     sessionToken?: SortOrder
     name?: SortOrder
     scholarNumber?: SortOrder
-    course?: SortOrder
+    mandal?: SortOrder
     semester?: SortOrder
     avatarId?: SortOrder
     createdAt?: SortOrder
@@ -9588,7 +9588,7 @@ export namespace Prisma {
     sessionToken?: SortOrder
     name?: SortOrder
     scholarNumber?: SortOrder
-    course?: SortOrder
+    mandal?: SortOrder
     semester?: SortOrder
     avatarId?: SortOrder
     createdAt?: SortOrder
@@ -9600,7 +9600,7 @@ export namespace Prisma {
     sessionToken?: SortOrder
     name?: SortOrder
     scholarNumber?: SortOrder
-    course?: SortOrder
+    mandal?: SortOrder
     semester?: SortOrder
     avatarId?: SortOrder
     createdAt?: SortOrder
@@ -10912,7 +10912,7 @@ export namespace Prisma {
     sessionToken: string
     name: string
     scholarNumber: string
-    course: string
+    mandal: string
     semester: string
     avatarId: string
     createdAt?: Date | string
@@ -10924,7 +10924,7 @@ export namespace Prisma {
     sessionToken: string
     name: string
     scholarNumber: string
-    course: string
+    mandal: string
     semester: string
     avatarId: string
     createdAt?: Date | string
@@ -11034,7 +11034,7 @@ export namespace Prisma {
     sessionToken?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     scholarNumber?: StringFieldUpdateOperationsInput | string
-    course?: StringFieldUpdateOperationsInput | string
+    mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11046,7 +11046,7 @@ export namespace Prisma {
     sessionToken?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     scholarNumber?: StringFieldUpdateOperationsInput | string
-    course?: StringFieldUpdateOperationsInput | string
+    mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
