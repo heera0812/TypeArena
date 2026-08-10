@@ -9,6 +9,8 @@
   "scripts": {
     "dev": "npx concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
     "build": "npm run build --workspaces --if-present",
+    "db:sqlite": "node switch-db.js sqlite && npm run build",
+    "db:postgres": "node switch-db.js postgres && npm run build",
     "install:all": "npm install"
   },
   "optionalDependencies": {

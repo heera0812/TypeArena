@@ -18,7 +18,10 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-const server = http.createServer(app);
+const PORT = parseInt(String(process.env.PORT || "3001"), 10);
+const server = app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 TypeArena Backend running on http://0.0.0.0:${PORT}`);
+});
 
 const io = new Server(server, {
   cors: { origin: true, credentials: true, methods: ["GET", "POST"] }
@@ -90,7 +93,8 @@ app.post("/api/players", async (req, res) => {
       data: { ...data, sessionToken }
     });
     res.json({ sessionToken, playerSession });
-  } catch {
+  } catch (e) {
+    console.error("Registration error details:", e);
     res.status(400).json({ error: "Invalid registration data" });
   }
 });
@@ -667,7 +671,4 @@ io.on("connection", (socket: any) => {
   });
 });
 
-const PORT = parseInt(String(process.env.PORT || "3001"), 10);
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 TypeArena Backend running on http://0.0.0.0:${PORT}`);
-});
+
