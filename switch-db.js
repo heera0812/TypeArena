@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 const target = process.argv[2]; // 'sqlite' or 'postgres'
-const schemaPath = path.join(__dirname, 'apps', 'server', 'prisma', 'schema.prisma');
-const envPath = path.join(__dirname, 'apps', 'server', '.env');
+const schemaPath = path.join(__dirname, 'backend', 'prisma', 'schema.prisma');
+const envPath = path.join(__dirname, 'backend', '.env');
 
 if (target !== 'sqlite' && target !== 'postgres') {
   console.error("Usage: node switch-db.js [sqlite|postgres]");

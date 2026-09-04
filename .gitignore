@@ -35,8 +35,11 @@ Thumbs.db
 
 # Prisma generated/temp files
 apps/server/prisma/generated/
-*.tmp
+backend/prisma/generated/
+*.tmp*
 *.bak
+*.db
+*.db-journal
 
 # Node
 node_modules/
