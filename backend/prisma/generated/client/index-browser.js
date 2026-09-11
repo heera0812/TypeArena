@@ -133,6 +133,7 @@ exports.Prisma.PlayerSessionScalarFieldEnum = {
   mandal: 'mandal',
   semester: 'semester',
   avatarId: 'avatarId',
+  pin: 'pin',
   createdAt: 'createdAt',
   lastSeenAt: 'lastSeenAt'
 };
@@ -188,6 +189,22 @@ exports.Prisma.ResultScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PracticeRecordScalarFieldEnum = {
+  id: 'id',
+  scholarNumber: 'scholarNumber',
+  name: 'name',
+  language: 'language',
+  difficulty: 'difficulty',
+  paragraphTitle: 'paragraphTitle',
+  netWpm: 'netWpm',
+  grossWpm: 'grossWpm',
+  cpm: 'cpm',
+  accuracy: 'accuracy',
+  errors: 'errors',
+  timeSpent: 'timeSpent',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -205,7 +222,8 @@ exports.Prisma.ModelName = {
   Competition: 'Competition',
   CompetitionParticipant: 'CompetitionParticipant',
   Paragraph: 'Paragraph',
-  Result: 'Result'
+  Result: 'Result',
+  PracticeRecord: 'PracticeRecord'
 };
 
 /**

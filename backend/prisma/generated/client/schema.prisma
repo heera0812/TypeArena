@@ -26,6 +26,7 @@ model PlayerSession {
   mandal        String
   semester      String
   avatarId      String
+  pin           String?
   createdAt     DateTime @default(now())
   lastSeenAt    DateTime @default(now())
 
@@ -102,4 +103,22 @@ model Result {
   // Relations
   competition Competition            @relation(fields: [competitionId], references: [id])
   participant CompetitionParticipant @relation(fields: [participantId], references: [id])
+}
+
+model PracticeRecord {
+  id             String   @id @default(uuid())
+  scholarNumber  String
+  name           String?
+  language       String // "EN" or "HI"
+  difficulty     String? // "EASY", "MEDIUM", "HARD"
+  paragraphTitle String?
+  netWpm         Int
+  grossWpm       Int?
+  cpm            Int?
+  accuracy       Float
+  errors         Int
+  timeSpent      Int // Time spent in seconds
+  createdAt      DateTime @default(now())
+
+  @@index([scholarNumber])
 }

@@ -100,6 +100,231 @@ app.post("/api/players", async (req, res) => {
   }
 });
 
+// 2b. Student Authentication & Records
+app.post("/api/auth/player-login", async (req, res) => {
+  const { scholarNumber, pin } = req.body;
+  if (!scholarNumber || typeof scholarNumber !== "string") {
+    return res.status(400).json({ error: "Scholar number is required" });
+  }
+
+  const cleanScholar = scholarNumber.trim();
+  try {
+    const playerSession = await prisma.playerSession.findFirst({
+      where: { scholarNumber: cleanScholar },
+      orderBy: { createdAt: "desc" }
+    });
+
+    if (!playerSession) {
+      return res.status(404).json({
+        error: `No registered profile found for Scholar Number "${cleanScholar}". Please register first.`
+      });
+    }
+
+    if (playerSession.pin) {
+      if (!pin) {
+        return res.json({
+          requiresPin: true,
+          player: {
+            id: playerSession.id,
+            name: playerSession.name,
+            scholarNumber: playerSession.scholarNumber,
+            avatarId: playerSession.avatarId
+          }
+        });
+      }
+      if (playerSession.pin !== String(pin).trim()) {
+        return res.status(401).json({ error: "Incorrect security PIN" });
+      }
+    }
+
+    await prisma.playerSession.update({
+      where: { id: playerSession.id },
+      data: { lastSeenAt: new Date() }
+    });
+
+    res.json({
+      success: true,
+      sessionToken: playerSession.sessionToken,
+      hasPin: !!playerSession.pin,
+      player: {
+        id: playerSession.id,
+        name: playerSession.name,
+        scholarNumber: playerSession.scholarNumber,
+        mandal: playerSession.mandal,
+        semester: playerSession.semester,
+        avatarId: playerSession.avatarId,
+        createdAt: playerSession.createdAt
+      }
+    });
+  } catch (error) {
+    console.error("Player login error:", error);
+    res.status(500).json({ error: "Login failed" });
+  }
+});
+
+app.post("/api/auth/player-pin", async (req, res) => {
+  const { scholarNumber, pin } = req.body;
+  if (!scholarNumber || !pin) {
+    return res.status(400).json({ error: "Scholar number and PIN are required" });
+  }
+  try {
+    const cleanScholar = String(scholarNumber).trim();
+    const cleanPin = String(pin).trim();
+    const updated = await prisma.playerSession.updateMany({
+      where: { scholarNumber: cleanScholar },
+      data: { pin: cleanPin }
+    });
+    if (updated.count === 0) {
+      return res.status(404).json({ error: "Player profile not found" });
+    }
+    res.json({ success: true, message: "PIN updated successfully" });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to update PIN" });
+  }
+});
+
+app.get("/api/players/:scholarNumber/records", async (req, res) => {
+  const { scholarNumber } = req.params;
+  const cleanScholar = String(scholarNumber).trim();
+
+  try {
+    const playerSession = await prisma.playerSession.findFirst({
+      where: { scholarNumber: cleanScholar },
+      orderBy: { createdAt: "desc" }
+    });
+
+    if (!playerSession) {
+      return res.status(404).json({ error: "Student profile not found" });
+    }
+
+    const allSessions = await prisma.playerSession.findMany({
+      where: { scholarNumber: cleanScholar },
+      select: { id: true }
+    });
+    const sessionIds = allSessions.map(s => s.id);
+
+    const compResults = await prisma.result.findMany({
+      where: {
+        participant: {
+          playerSessionId: { in: sessionIds }
+        }
+      },
+      include: {
+        competition: {
+          include: { paragraph: { select: { title: true } } }
+        },
+        participant: true
+      },
+      orderBy: { createdAt: "desc" }
+    });
+
+    const formattedCompetitions = compResults.map(r => ({
+      id: r.id,
+      competitionId: r.competitionId,
+      competitionName: r.competition?.name || "Competition",
+      roomCode: r.competition?.roomCode,
+      language: r.competition?.language,
+      gameMode: r.competition?.gameMode,
+      difficulty: r.competition?.difficulty,
+      paragraphTitle: r.competition?.paragraph?.title,
+      rank: r.finalRank,
+      grossWpm: r.grossWpm,
+      netWpm: r.netWpm,
+      cpm: r.cpm,
+      accuracy: Math.round(r.accuracy),
+      errors: r.errors,
+      completionPercentage: Math.round(r.completionPercentage),
+      finishTime: r.finishTime,
+      playedAt: r.createdAt
+    }));
+
+    const practiceRecords = await prisma.practiceRecord.findMany({
+      where: { scholarNumber: cleanScholar },
+      orderBy: { createdAt: "desc" }
+    });
+
+    const allWpms = [
+      ...formattedCompetitions.map(c => c.netWpm),
+      ...practiceRecords.map(p => p.netWpm)
+    ];
+    const bestWpm = allWpms.length > 0 ? Math.max(...allWpms) : 0;
+
+    const allAccuracies = [
+      ...formattedCompetitions.map(c => c.accuracy),
+      ...practiceRecords.map(p => p.accuracy)
+    ];
+    const avgAccuracy = allAccuracies.length > 0
+      ? Math.round(allAccuracies.reduce((a, b) => a + b, 0) / allAccuracies.length)
+      : 0;
+
+    const podiumCount = formattedCompetitions.filter(c => c.rank && c.rank <= 3).length;
+
+    res.json({
+      profile: {
+        id: playerSession.id,
+        name: playerSession.name,
+        scholarNumber: playerSession.scholarNumber,
+        mandal: playerSession.mandal,
+        semester: playerSession.semester,
+        avatarId: playerSession.avatarId,
+        hasPin: !!playerSession.pin,
+        joinedAt: playerSession.createdAt
+      },
+      stats: {
+        bestNetWpm: bestWpm,
+        avgAccuracy,
+        totalCompetitions: formattedCompetitions.length,
+        totalPractices: practiceRecords.length,
+        podiumFinishes: podiumCount
+      },
+      competitions: formattedCompetitions,
+      practice: practiceRecords
+    });
+  } catch (error) {
+    console.error("Fetch records error:", error);
+    res.status(500).json({ error: "Failed to fetch student records" });
+  }
+});
+
+app.post("/api/practice/records", async (req, res) => {
+  const schema = z.object({
+    scholarNumber: z.string().min(1),
+    name: z.string().optional(),
+    language: z.enum(["EN", "HI"]),
+    difficulty: z.enum(["EASY", "MEDIUM", "HARD"]).optional(),
+    paragraphTitle: z.string().optional(),
+    netWpm: z.number().int().nonnegative(),
+    grossWpm: z.number().int().nonnegative().optional(),
+    cpm: z.number().int().nonnegative().optional(),
+    accuracy: z.number().min(0).max(100),
+    errors: z.number().int().nonnegative(),
+    timeSpent: z.number().int().nonnegative()
+  });
+
+  try {
+    const data = schema.parse(req.body);
+    const record = await prisma.practiceRecord.create({
+      data: {
+        scholarNumber: data.scholarNumber.trim(),
+        name: data.name,
+        language: data.language,
+        difficulty: data.difficulty,
+        paragraphTitle: data.paragraphTitle,
+        netWpm: data.netWpm,
+        grossWpm: data.grossWpm ?? data.netWpm,
+        cpm: data.cpm ?? data.netWpm * 5,
+        accuracy: data.accuracy,
+        errors: data.errors,
+        timeSpent: data.timeSpent
+      }
+    });
+    res.json({ success: true, record });
+  } catch (e) {
+    console.error("Save practice error:", e);
+    res.status(400).json({ error: "Invalid practice record data", details: String(e) });
+  }
+});
+
 // 3. Paragraphs
 app.get("/api/paragraphs", async (_req, res) => {
   const paragraphs = await prisma.paragraph.findMany({ orderBy: { createdAt: "desc" } });

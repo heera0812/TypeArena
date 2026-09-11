@@ -43,6 +43,11 @@ export type Paragraph = $Result.DefaultSelection<Prisma.$ParagraphPayload>
  * 
  */
 export type Result = $Result.DefaultSelection<Prisma.$ResultPayload>
+/**
+ * Model PracticeRecord
+ * 
+ */
+export type PracticeRecord = $Result.DefaultSelection<Prisma.$PracticeRecordPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -221,6 +226,16 @@ export class PrismaClient<
     * ```
     */
   get result(): Prisma.ResultDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.practiceRecord`: Exposes CRUD operations for the **PracticeRecord** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PracticeRecords
+    * const practiceRecords = await prisma.practiceRecord.findMany()
+    * ```
+    */
+  get practiceRecord(): Prisma.PracticeRecordDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -667,7 +682,8 @@ export namespace Prisma {
     Competition: 'Competition',
     CompetitionParticipant: 'CompetitionParticipant',
     Paragraph: 'Paragraph',
-    Result: 'Result'
+    Result: 'Result',
+    PracticeRecord: 'PracticeRecord'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -686,7 +702,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "admin" | "playerSession" | "competition" | "competitionParticipant" | "paragraph" | "result"
+      modelProps: "admin" | "playerSession" | "competition" | "competitionParticipant" | "paragraph" | "result" | "practiceRecord"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1134,6 +1150,80 @@ export namespace Prisma {
           }
         }
       }
+      PracticeRecord: {
+        payload: Prisma.$PracticeRecordPayload<ExtArgs>
+        fields: Prisma.PracticeRecordFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PracticeRecordFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeRecordPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PracticeRecordFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeRecordPayload>
+          }
+          findFirst: {
+            args: Prisma.PracticeRecordFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeRecordPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PracticeRecordFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeRecordPayload>
+          }
+          findMany: {
+            args: Prisma.PracticeRecordFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeRecordPayload>[]
+          }
+          create: {
+            args: Prisma.PracticeRecordCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeRecordPayload>
+          }
+          createMany: {
+            args: Prisma.PracticeRecordCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PracticeRecordCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeRecordPayload>[]
+          }
+          delete: {
+            args: Prisma.PracticeRecordDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeRecordPayload>
+          }
+          update: {
+            args: Prisma.PracticeRecordUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeRecordPayload>
+          }
+          deleteMany: {
+            args: Prisma.PracticeRecordDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PracticeRecordUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PracticeRecordUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeRecordPayload>[]
+          }
+          upsert: {
+            args: Prisma.PracticeRecordUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PracticeRecordPayload>
+          }
+          aggregate: {
+            args: Prisma.PracticeRecordAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePracticeRecord>
+          }
+          groupBy: {
+            args: Prisma.PracticeRecordGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PracticeRecordGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PracticeRecordCountArgs<ExtArgs>
+            result: $Utils.Optional<PracticeRecordCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1236,6 +1326,7 @@ export namespace Prisma {
     competitionParticipant?: CompetitionParticipantOmit
     paragraph?: ParagraphOmit
     result?: ResultOmit
+    practiceRecord?: PracticeRecordOmit
   }
 
   /* Types for Logging */
@@ -2552,6 +2643,7 @@ export namespace Prisma {
     mandal: string | null
     semester: string | null
     avatarId: string | null
+    pin: string | null
     createdAt: Date | null
     lastSeenAt: Date | null
   }
@@ -2564,6 +2656,7 @@ export namespace Prisma {
     mandal: string | null
     semester: string | null
     avatarId: string | null
+    pin: string | null
     createdAt: Date | null
     lastSeenAt: Date | null
   }
@@ -2576,6 +2669,7 @@ export namespace Prisma {
     mandal: number
     semester: number
     avatarId: number
+    pin: number
     createdAt: number
     lastSeenAt: number
     _all: number
@@ -2590,6 +2684,7 @@ export namespace Prisma {
     mandal?: true
     semester?: true
     avatarId?: true
+    pin?: true
     createdAt?: true
     lastSeenAt?: true
   }
@@ -2602,6 +2697,7 @@ export namespace Prisma {
     mandal?: true
     semester?: true
     avatarId?: true
+    pin?: true
     createdAt?: true
     lastSeenAt?: true
   }
@@ -2614,6 +2710,7 @@ export namespace Prisma {
     mandal?: true
     semester?: true
     avatarId?: true
+    pin?: true
     createdAt?: true
     lastSeenAt?: true
     _all?: true
@@ -2699,6 +2796,7 @@ export namespace Prisma {
     mandal: string
     semester: string
     avatarId: string
+    pin: string | null
     createdAt: Date
     lastSeenAt: Date
     _count: PlayerSessionCountAggregateOutputType | null
@@ -2728,6 +2826,7 @@ export namespace Prisma {
     mandal?: boolean
     semester?: boolean
     avatarId?: boolean
+    pin?: boolean
     createdAt?: boolean
     lastSeenAt?: boolean
     participations?: boolean | PlayerSession$participationsArgs<ExtArgs>
@@ -2742,6 +2841,7 @@ export namespace Prisma {
     mandal?: boolean
     semester?: boolean
     avatarId?: boolean
+    pin?: boolean
     createdAt?: boolean
     lastSeenAt?: boolean
   }, ExtArgs["result"]["playerSession"]>
@@ -2754,6 +2854,7 @@ export namespace Prisma {
     mandal?: boolean
     semester?: boolean
     avatarId?: boolean
+    pin?: boolean
     createdAt?: boolean
     lastSeenAt?: boolean
   }, ExtArgs["result"]["playerSession"]>
@@ -2766,11 +2867,12 @@ export namespace Prisma {
     mandal?: boolean
     semester?: boolean
     avatarId?: boolean
+    pin?: boolean
     createdAt?: boolean
     lastSeenAt?: boolean
   }
 
-  export type PlayerSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sessionToken" | "name" | "scholarNumber" | "mandal" | "semester" | "avatarId" | "createdAt" | "lastSeenAt", ExtArgs["result"]["playerSession"]>
+  export type PlayerSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sessionToken" | "name" | "scholarNumber" | "mandal" | "semester" | "avatarId" | "pin" | "createdAt" | "lastSeenAt", ExtArgs["result"]["playerSession"]>
   export type PlayerSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     participations?: boolean | PlayerSession$participationsArgs<ExtArgs>
     _count?: boolean | PlayerSessionCountOutputTypeDefaultArgs<ExtArgs>
@@ -2791,6 +2893,7 @@ export namespace Prisma {
       mandal: string
       semester: string
       avatarId: string
+      pin: string | null
       createdAt: Date
       lastSeenAt: Date
     }, ExtArgs["result"]["playerSession"]>
@@ -3224,6 +3327,7 @@ export namespace Prisma {
     readonly mandal: FieldRef<"PlayerSession", 'String'>
     readonly semester: FieldRef<"PlayerSession", 'String'>
     readonly avatarId: FieldRef<"PlayerSession", 'String'>
+    readonly pin: FieldRef<"PlayerSession", 'String'>
     readonly createdAt: FieldRef<"PlayerSession", 'DateTime'>
     readonly lastSeenAt: FieldRef<"PlayerSession", 'DateTime'>
   }
@@ -8346,6 +8450,1157 @@ export namespace Prisma {
 
 
   /**
+   * Model PracticeRecord
+   */
+
+  export type AggregatePracticeRecord = {
+    _count: PracticeRecordCountAggregateOutputType | null
+    _avg: PracticeRecordAvgAggregateOutputType | null
+    _sum: PracticeRecordSumAggregateOutputType | null
+    _min: PracticeRecordMinAggregateOutputType | null
+    _max: PracticeRecordMaxAggregateOutputType | null
+  }
+
+  export type PracticeRecordAvgAggregateOutputType = {
+    netWpm: number | null
+    grossWpm: number | null
+    cpm: number | null
+    accuracy: number | null
+    errors: number | null
+    timeSpent: number | null
+  }
+
+  export type PracticeRecordSumAggregateOutputType = {
+    netWpm: number | null
+    grossWpm: number | null
+    cpm: number | null
+    accuracy: number | null
+    errors: number | null
+    timeSpent: number | null
+  }
+
+  export type PracticeRecordMinAggregateOutputType = {
+    id: string | null
+    scholarNumber: string | null
+    name: string | null
+    language: string | null
+    difficulty: string | null
+    paragraphTitle: string | null
+    netWpm: number | null
+    grossWpm: number | null
+    cpm: number | null
+    accuracy: number | null
+    errors: number | null
+    timeSpent: number | null
+    createdAt: Date | null
+  }
+
+  export type PracticeRecordMaxAggregateOutputType = {
+    id: string | null
+    scholarNumber: string | null
+    name: string | null
+    language: string | null
+    difficulty: string | null
+    paragraphTitle: string | null
+    netWpm: number | null
+    grossWpm: number | null
+    cpm: number | null
+    accuracy: number | null
+    errors: number | null
+    timeSpent: number | null
+    createdAt: Date | null
+  }
+
+  export type PracticeRecordCountAggregateOutputType = {
+    id: number
+    scholarNumber: number
+    name: number
+    language: number
+    difficulty: number
+    paragraphTitle: number
+    netWpm: number
+    grossWpm: number
+    cpm: number
+    accuracy: number
+    errors: number
+    timeSpent: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PracticeRecordAvgAggregateInputType = {
+    netWpm?: true
+    grossWpm?: true
+    cpm?: true
+    accuracy?: true
+    errors?: true
+    timeSpent?: true
+  }
+
+  export type PracticeRecordSumAggregateInputType = {
+    netWpm?: true
+    grossWpm?: true
+    cpm?: true
+    accuracy?: true
+    errors?: true
+    timeSpent?: true
+  }
+
+  export type PracticeRecordMinAggregateInputType = {
+    id?: true
+    scholarNumber?: true
+    name?: true
+    language?: true
+    difficulty?: true
+    paragraphTitle?: true
+    netWpm?: true
+    grossWpm?: true
+    cpm?: true
+    accuracy?: true
+    errors?: true
+    timeSpent?: true
+    createdAt?: true
+  }
+
+  export type PracticeRecordMaxAggregateInputType = {
+    id?: true
+    scholarNumber?: true
+    name?: true
+    language?: true
+    difficulty?: true
+    paragraphTitle?: true
+    netWpm?: true
+    grossWpm?: true
+    cpm?: true
+    accuracy?: true
+    errors?: true
+    timeSpent?: true
+    createdAt?: true
+  }
+
+  export type PracticeRecordCountAggregateInputType = {
+    id?: true
+    scholarNumber?: true
+    name?: true
+    language?: true
+    difficulty?: true
+    paragraphTitle?: true
+    netWpm?: true
+    grossWpm?: true
+    cpm?: true
+    accuracy?: true
+    errors?: true
+    timeSpent?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PracticeRecordAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PracticeRecord to aggregate.
+     */
+    where?: PracticeRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeRecords to fetch.
+     */
+    orderBy?: PracticeRecordOrderByWithRelationInput | PracticeRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PracticeRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeRecords.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PracticeRecords
+    **/
+    _count?: true | PracticeRecordCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PracticeRecordAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PracticeRecordSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PracticeRecordMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PracticeRecordMaxAggregateInputType
+  }
+
+  export type GetPracticeRecordAggregateType<T extends PracticeRecordAggregateArgs> = {
+        [P in keyof T & keyof AggregatePracticeRecord]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePracticeRecord[P]>
+      : GetScalarType<T[P], AggregatePracticeRecord[P]>
+  }
+
+
+
+
+  export type PracticeRecordGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PracticeRecordWhereInput
+    orderBy?: PracticeRecordOrderByWithAggregationInput | PracticeRecordOrderByWithAggregationInput[]
+    by: PracticeRecordScalarFieldEnum[] | PracticeRecordScalarFieldEnum
+    having?: PracticeRecordScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PracticeRecordCountAggregateInputType | true
+    _avg?: PracticeRecordAvgAggregateInputType
+    _sum?: PracticeRecordSumAggregateInputType
+    _min?: PracticeRecordMinAggregateInputType
+    _max?: PracticeRecordMaxAggregateInputType
+  }
+
+  export type PracticeRecordGroupByOutputType = {
+    id: string
+    scholarNumber: string
+    name: string | null
+    language: string
+    difficulty: string | null
+    paragraphTitle: string | null
+    netWpm: number
+    grossWpm: number | null
+    cpm: number | null
+    accuracy: number
+    errors: number
+    timeSpent: number
+    createdAt: Date
+    _count: PracticeRecordCountAggregateOutputType | null
+    _avg: PracticeRecordAvgAggregateOutputType | null
+    _sum: PracticeRecordSumAggregateOutputType | null
+    _min: PracticeRecordMinAggregateOutputType | null
+    _max: PracticeRecordMaxAggregateOutputType | null
+  }
+
+  type GetPracticeRecordGroupByPayload<T extends PracticeRecordGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PracticeRecordGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PracticeRecordGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PracticeRecordGroupByOutputType[P]>
+            : GetScalarType<T[P], PracticeRecordGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PracticeRecordSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    scholarNumber?: boolean
+    name?: boolean
+    language?: boolean
+    difficulty?: boolean
+    paragraphTitle?: boolean
+    netWpm?: boolean
+    grossWpm?: boolean
+    cpm?: boolean
+    accuracy?: boolean
+    errors?: boolean
+    timeSpent?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["practiceRecord"]>
+
+  export type PracticeRecordSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    scholarNumber?: boolean
+    name?: boolean
+    language?: boolean
+    difficulty?: boolean
+    paragraphTitle?: boolean
+    netWpm?: boolean
+    grossWpm?: boolean
+    cpm?: boolean
+    accuracy?: boolean
+    errors?: boolean
+    timeSpent?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["practiceRecord"]>
+
+  export type PracticeRecordSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    scholarNumber?: boolean
+    name?: boolean
+    language?: boolean
+    difficulty?: boolean
+    paragraphTitle?: boolean
+    netWpm?: boolean
+    grossWpm?: boolean
+    cpm?: boolean
+    accuracy?: boolean
+    errors?: boolean
+    timeSpent?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["practiceRecord"]>
+
+  export type PracticeRecordSelectScalar = {
+    id?: boolean
+    scholarNumber?: boolean
+    name?: boolean
+    language?: boolean
+    difficulty?: boolean
+    paragraphTitle?: boolean
+    netWpm?: boolean
+    grossWpm?: boolean
+    cpm?: boolean
+    accuracy?: boolean
+    errors?: boolean
+    timeSpent?: boolean
+    createdAt?: boolean
+  }
+
+  export type PracticeRecordOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "scholarNumber" | "name" | "language" | "difficulty" | "paragraphTitle" | "netWpm" | "grossWpm" | "cpm" | "accuracy" | "errors" | "timeSpent" | "createdAt", ExtArgs["result"]["practiceRecord"]>
+
+  export type $PracticeRecordPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PracticeRecord"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      scholarNumber: string
+      name: string | null
+      language: string
+      difficulty: string | null
+      paragraphTitle: string | null
+      netWpm: number
+      grossWpm: number | null
+      cpm: number | null
+      accuracy: number
+      errors: number
+      timeSpent: number
+      createdAt: Date
+    }, ExtArgs["result"]["practiceRecord"]>
+    composites: {}
+  }
+
+  type PracticeRecordGetPayload<S extends boolean | null | undefined | PracticeRecordDefaultArgs> = $Result.GetResult<Prisma.$PracticeRecordPayload, S>
+
+  type PracticeRecordCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PracticeRecordFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PracticeRecordCountAggregateInputType | true
+    }
+
+  export interface PracticeRecordDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PracticeRecord'], meta: { name: 'PracticeRecord' } }
+    /**
+     * Find zero or one PracticeRecord that matches the filter.
+     * @param {PracticeRecordFindUniqueArgs} args - Arguments to find a PracticeRecord
+     * @example
+     * // Get one PracticeRecord
+     * const practiceRecord = await prisma.practiceRecord.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PracticeRecordFindUniqueArgs>(args: SelectSubset<T, PracticeRecordFindUniqueArgs<ExtArgs>>): Prisma__PracticeRecordClient<$Result.GetResult<Prisma.$PracticeRecordPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PracticeRecord that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PracticeRecordFindUniqueOrThrowArgs} args - Arguments to find a PracticeRecord
+     * @example
+     * // Get one PracticeRecord
+     * const practiceRecord = await prisma.practiceRecord.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PracticeRecordFindUniqueOrThrowArgs>(args: SelectSubset<T, PracticeRecordFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PracticeRecordClient<$Result.GetResult<Prisma.$PracticeRecordPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PracticeRecord that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeRecordFindFirstArgs} args - Arguments to find a PracticeRecord
+     * @example
+     * // Get one PracticeRecord
+     * const practiceRecord = await prisma.practiceRecord.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PracticeRecordFindFirstArgs>(args?: SelectSubset<T, PracticeRecordFindFirstArgs<ExtArgs>>): Prisma__PracticeRecordClient<$Result.GetResult<Prisma.$PracticeRecordPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PracticeRecord that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeRecordFindFirstOrThrowArgs} args - Arguments to find a PracticeRecord
+     * @example
+     * // Get one PracticeRecord
+     * const practiceRecord = await prisma.practiceRecord.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PracticeRecordFindFirstOrThrowArgs>(args?: SelectSubset<T, PracticeRecordFindFirstOrThrowArgs<ExtArgs>>): Prisma__PracticeRecordClient<$Result.GetResult<Prisma.$PracticeRecordPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PracticeRecords that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeRecordFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PracticeRecords
+     * const practiceRecords = await prisma.practiceRecord.findMany()
+     * 
+     * // Get first 10 PracticeRecords
+     * const practiceRecords = await prisma.practiceRecord.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const practiceRecordWithIdOnly = await prisma.practiceRecord.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PracticeRecordFindManyArgs>(args?: SelectSubset<T, PracticeRecordFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PracticeRecord.
+     * @param {PracticeRecordCreateArgs} args - Arguments to create a PracticeRecord.
+     * @example
+     * // Create one PracticeRecord
+     * const PracticeRecord = await prisma.practiceRecord.create({
+     *   data: {
+     *     // ... data to create a PracticeRecord
+     *   }
+     * })
+     * 
+     */
+    create<T extends PracticeRecordCreateArgs>(args: SelectSubset<T, PracticeRecordCreateArgs<ExtArgs>>): Prisma__PracticeRecordClient<$Result.GetResult<Prisma.$PracticeRecordPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PracticeRecords.
+     * @param {PracticeRecordCreateManyArgs} args - Arguments to create many PracticeRecords.
+     * @example
+     * // Create many PracticeRecords
+     * const practiceRecord = await prisma.practiceRecord.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PracticeRecordCreateManyArgs>(args?: SelectSubset<T, PracticeRecordCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PracticeRecords and returns the data saved in the database.
+     * @param {PracticeRecordCreateManyAndReturnArgs} args - Arguments to create many PracticeRecords.
+     * @example
+     * // Create many PracticeRecords
+     * const practiceRecord = await prisma.practiceRecord.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PracticeRecords and only return the `id`
+     * const practiceRecordWithIdOnly = await prisma.practiceRecord.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PracticeRecordCreateManyAndReturnArgs>(args?: SelectSubset<T, PracticeRecordCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeRecordPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PracticeRecord.
+     * @param {PracticeRecordDeleteArgs} args - Arguments to delete one PracticeRecord.
+     * @example
+     * // Delete one PracticeRecord
+     * const PracticeRecord = await prisma.practiceRecord.delete({
+     *   where: {
+     *     // ... filter to delete one PracticeRecord
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PracticeRecordDeleteArgs>(args: SelectSubset<T, PracticeRecordDeleteArgs<ExtArgs>>): Prisma__PracticeRecordClient<$Result.GetResult<Prisma.$PracticeRecordPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PracticeRecord.
+     * @param {PracticeRecordUpdateArgs} args - Arguments to update one PracticeRecord.
+     * @example
+     * // Update one PracticeRecord
+     * const practiceRecord = await prisma.practiceRecord.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PracticeRecordUpdateArgs>(args: SelectSubset<T, PracticeRecordUpdateArgs<ExtArgs>>): Prisma__PracticeRecordClient<$Result.GetResult<Prisma.$PracticeRecordPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PracticeRecords.
+     * @param {PracticeRecordDeleteManyArgs} args - Arguments to filter PracticeRecords to delete.
+     * @example
+     * // Delete a few PracticeRecords
+     * const { count } = await prisma.practiceRecord.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PracticeRecordDeleteManyArgs>(args?: SelectSubset<T, PracticeRecordDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PracticeRecords.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeRecordUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PracticeRecords
+     * const practiceRecord = await prisma.practiceRecord.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PracticeRecordUpdateManyArgs>(args: SelectSubset<T, PracticeRecordUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PracticeRecords and returns the data updated in the database.
+     * @param {PracticeRecordUpdateManyAndReturnArgs} args - Arguments to update many PracticeRecords.
+     * @example
+     * // Update many PracticeRecords
+     * const practiceRecord = await prisma.practiceRecord.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PracticeRecords and only return the `id`
+     * const practiceRecordWithIdOnly = await prisma.practiceRecord.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PracticeRecordUpdateManyAndReturnArgs>(args: SelectSubset<T, PracticeRecordUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PracticeRecordPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PracticeRecord.
+     * @param {PracticeRecordUpsertArgs} args - Arguments to update or create a PracticeRecord.
+     * @example
+     * // Update or create a PracticeRecord
+     * const practiceRecord = await prisma.practiceRecord.upsert({
+     *   create: {
+     *     // ... data to create a PracticeRecord
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PracticeRecord we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PracticeRecordUpsertArgs>(args: SelectSubset<T, PracticeRecordUpsertArgs<ExtArgs>>): Prisma__PracticeRecordClient<$Result.GetResult<Prisma.$PracticeRecordPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PracticeRecords.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeRecordCountArgs} args - Arguments to filter PracticeRecords to count.
+     * @example
+     * // Count the number of PracticeRecords
+     * const count = await prisma.practiceRecord.count({
+     *   where: {
+     *     // ... the filter for the PracticeRecords we want to count
+     *   }
+     * })
+    **/
+    count<T extends PracticeRecordCountArgs>(
+      args?: Subset<T, PracticeRecordCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PracticeRecordCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PracticeRecord.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeRecordAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PracticeRecordAggregateArgs>(args: Subset<T, PracticeRecordAggregateArgs>): Prisma.PrismaPromise<GetPracticeRecordAggregateType<T>>
+
+    /**
+     * Group by PracticeRecord.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PracticeRecordGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PracticeRecordGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PracticeRecordGroupByArgs['orderBy'] }
+        : { orderBy?: PracticeRecordGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PracticeRecordGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPracticeRecordGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PracticeRecord model
+   */
+  readonly fields: PracticeRecordFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PracticeRecord.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PracticeRecordClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PracticeRecord model
+   */
+  interface PracticeRecordFieldRefs {
+    readonly id: FieldRef<"PracticeRecord", 'String'>
+    readonly scholarNumber: FieldRef<"PracticeRecord", 'String'>
+    readonly name: FieldRef<"PracticeRecord", 'String'>
+    readonly language: FieldRef<"PracticeRecord", 'String'>
+    readonly difficulty: FieldRef<"PracticeRecord", 'String'>
+    readonly paragraphTitle: FieldRef<"PracticeRecord", 'String'>
+    readonly netWpm: FieldRef<"PracticeRecord", 'Int'>
+    readonly grossWpm: FieldRef<"PracticeRecord", 'Int'>
+    readonly cpm: FieldRef<"PracticeRecord", 'Int'>
+    readonly accuracy: FieldRef<"PracticeRecord", 'Float'>
+    readonly errors: FieldRef<"PracticeRecord", 'Int'>
+    readonly timeSpent: FieldRef<"PracticeRecord", 'Int'>
+    readonly createdAt: FieldRef<"PracticeRecord", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PracticeRecord findUnique
+   */
+  export type PracticeRecordFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+    /**
+     * Filter, which PracticeRecord to fetch.
+     */
+    where: PracticeRecordWhereUniqueInput
+  }
+
+  /**
+   * PracticeRecord findUniqueOrThrow
+   */
+  export type PracticeRecordFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+    /**
+     * Filter, which PracticeRecord to fetch.
+     */
+    where: PracticeRecordWhereUniqueInput
+  }
+
+  /**
+   * PracticeRecord findFirst
+   */
+  export type PracticeRecordFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+    /**
+     * Filter, which PracticeRecord to fetch.
+     */
+    where?: PracticeRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeRecords to fetch.
+     */
+    orderBy?: PracticeRecordOrderByWithRelationInput | PracticeRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PracticeRecords.
+     */
+    cursor?: PracticeRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeRecords.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PracticeRecords.
+     */
+    distinct?: PracticeRecordScalarFieldEnum | PracticeRecordScalarFieldEnum[]
+  }
+
+  /**
+   * PracticeRecord findFirstOrThrow
+   */
+  export type PracticeRecordFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+    /**
+     * Filter, which PracticeRecord to fetch.
+     */
+    where?: PracticeRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeRecords to fetch.
+     */
+    orderBy?: PracticeRecordOrderByWithRelationInput | PracticeRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PracticeRecords.
+     */
+    cursor?: PracticeRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeRecords.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PracticeRecords.
+     */
+    distinct?: PracticeRecordScalarFieldEnum | PracticeRecordScalarFieldEnum[]
+  }
+
+  /**
+   * PracticeRecord findMany
+   */
+  export type PracticeRecordFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+    /**
+     * Filter, which PracticeRecords to fetch.
+     */
+    where?: PracticeRecordWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PracticeRecords to fetch.
+     */
+    orderBy?: PracticeRecordOrderByWithRelationInput | PracticeRecordOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PracticeRecords.
+     */
+    cursor?: PracticeRecordWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PracticeRecords from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PracticeRecords.
+     */
+    skip?: number
+    distinct?: PracticeRecordScalarFieldEnum | PracticeRecordScalarFieldEnum[]
+  }
+
+  /**
+   * PracticeRecord create
+   */
+  export type PracticeRecordCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+    /**
+     * The data needed to create a PracticeRecord.
+     */
+    data: XOR<PracticeRecordCreateInput, PracticeRecordUncheckedCreateInput>
+  }
+
+  /**
+   * PracticeRecord createMany
+   */
+  export type PracticeRecordCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PracticeRecords.
+     */
+    data: PracticeRecordCreateManyInput | PracticeRecordCreateManyInput[]
+  }
+
+  /**
+   * PracticeRecord createManyAndReturn
+   */
+  export type PracticeRecordCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+    /**
+     * The data used to create many PracticeRecords.
+     */
+    data: PracticeRecordCreateManyInput | PracticeRecordCreateManyInput[]
+  }
+
+  /**
+   * PracticeRecord update
+   */
+  export type PracticeRecordUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+    /**
+     * The data needed to update a PracticeRecord.
+     */
+    data: XOR<PracticeRecordUpdateInput, PracticeRecordUncheckedUpdateInput>
+    /**
+     * Choose, which PracticeRecord to update.
+     */
+    where: PracticeRecordWhereUniqueInput
+  }
+
+  /**
+   * PracticeRecord updateMany
+   */
+  export type PracticeRecordUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PracticeRecords.
+     */
+    data: XOR<PracticeRecordUpdateManyMutationInput, PracticeRecordUncheckedUpdateManyInput>
+    /**
+     * Filter which PracticeRecords to update
+     */
+    where?: PracticeRecordWhereInput
+    /**
+     * Limit how many PracticeRecords to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PracticeRecord updateManyAndReturn
+   */
+  export type PracticeRecordUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+    /**
+     * The data used to update PracticeRecords.
+     */
+    data: XOR<PracticeRecordUpdateManyMutationInput, PracticeRecordUncheckedUpdateManyInput>
+    /**
+     * Filter which PracticeRecords to update
+     */
+    where?: PracticeRecordWhereInput
+    /**
+     * Limit how many PracticeRecords to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PracticeRecord upsert
+   */
+  export type PracticeRecordUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+    /**
+     * The filter to search for the PracticeRecord to update in case it exists.
+     */
+    where: PracticeRecordWhereUniqueInput
+    /**
+     * In case the PracticeRecord found by the `where` argument doesn't exist, create a new PracticeRecord with this data.
+     */
+    create: XOR<PracticeRecordCreateInput, PracticeRecordUncheckedCreateInput>
+    /**
+     * In case the PracticeRecord was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PracticeRecordUpdateInput, PracticeRecordUncheckedUpdateInput>
+  }
+
+  /**
+   * PracticeRecord delete
+   */
+  export type PracticeRecordDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+    /**
+     * Filter which PracticeRecord to delete.
+     */
+    where: PracticeRecordWhereUniqueInput
+  }
+
+  /**
+   * PracticeRecord deleteMany
+   */
+  export type PracticeRecordDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PracticeRecords to delete
+     */
+    where?: PracticeRecordWhereInput
+    /**
+     * Limit how many PracticeRecords to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PracticeRecord without action
+   */
+  export type PracticeRecordDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PracticeRecord
+     */
+    select?: PracticeRecordSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PracticeRecord
+     */
+    omit?: PracticeRecordOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -8374,6 +9629,7 @@ export namespace Prisma {
     mandal: 'mandal',
     semester: 'semester',
     avatarId: 'avatarId',
+    pin: 'pin',
     createdAt: 'createdAt',
     lastSeenAt: 'lastSeenAt'
   };
@@ -8442,6 +9698,25 @@ export namespace Prisma {
   };
 
   export type ResultScalarFieldEnum = (typeof ResultScalarFieldEnum)[keyof typeof ResultScalarFieldEnum]
+
+
+  export const PracticeRecordScalarFieldEnum: {
+    id: 'id',
+    scholarNumber: 'scholarNumber',
+    name: 'name',
+    language: 'language',
+    difficulty: 'difficulty',
+    paragraphTitle: 'paragraphTitle',
+    netWpm: 'netWpm',
+    grossWpm: 'grossWpm',
+    cpm: 'cpm',
+    accuracy: 'accuracy',
+    errors: 'errors',
+    timeSpent: 'timeSpent',
+    createdAt: 'createdAt'
+  };
+
+  export type PracticeRecordScalarFieldEnum = (typeof PracticeRecordScalarFieldEnum)[keyof typeof PracticeRecordScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -8564,6 +9839,7 @@ export namespace Prisma {
     mandal?: StringFilter<"PlayerSession"> | string
     semester?: StringFilter<"PlayerSession"> | string
     avatarId?: StringFilter<"PlayerSession"> | string
+    pin?: StringNullableFilter<"PlayerSession"> | string | null
     createdAt?: DateTimeFilter<"PlayerSession"> | Date | string
     lastSeenAt?: DateTimeFilter<"PlayerSession"> | Date | string
     participations?: CompetitionParticipantListRelationFilter
@@ -8577,6 +9853,7 @@ export namespace Prisma {
     mandal?: SortOrder
     semester?: SortOrder
     avatarId?: SortOrder
+    pin?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     lastSeenAt?: SortOrder
     participations?: CompetitionParticipantOrderByRelationAggregateInput
@@ -8593,6 +9870,7 @@ export namespace Prisma {
     mandal?: StringFilter<"PlayerSession"> | string
     semester?: StringFilter<"PlayerSession"> | string
     avatarId?: StringFilter<"PlayerSession"> | string
+    pin?: StringNullableFilter<"PlayerSession"> | string | null
     createdAt?: DateTimeFilter<"PlayerSession"> | Date | string
     lastSeenAt?: DateTimeFilter<"PlayerSession"> | Date | string
     participations?: CompetitionParticipantListRelationFilter
@@ -8606,6 +9884,7 @@ export namespace Prisma {
     mandal?: SortOrder
     semester?: SortOrder
     avatarId?: SortOrder
+    pin?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     lastSeenAt?: SortOrder
     _count?: PlayerSessionCountOrderByAggregateInput
@@ -8624,6 +9903,7 @@ export namespace Prisma {
     mandal?: StringWithAggregatesFilter<"PlayerSession"> | string
     semester?: StringWithAggregatesFilter<"PlayerSession"> | string
     avatarId?: StringWithAggregatesFilter<"PlayerSession"> | string
+    pin?: StringNullableWithAggregatesFilter<"PlayerSession"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"PlayerSession"> | Date | string
     lastSeenAt?: DateTimeWithAggregatesFilter<"PlayerSession"> | Date | string
   }
@@ -8966,6 +10246,100 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Result"> | Date | string
   }
 
+  export type PracticeRecordWhereInput = {
+    AND?: PracticeRecordWhereInput | PracticeRecordWhereInput[]
+    OR?: PracticeRecordWhereInput[]
+    NOT?: PracticeRecordWhereInput | PracticeRecordWhereInput[]
+    id?: StringFilter<"PracticeRecord"> | string
+    scholarNumber?: StringFilter<"PracticeRecord"> | string
+    name?: StringNullableFilter<"PracticeRecord"> | string | null
+    language?: StringFilter<"PracticeRecord"> | string
+    difficulty?: StringNullableFilter<"PracticeRecord"> | string | null
+    paragraphTitle?: StringNullableFilter<"PracticeRecord"> | string | null
+    netWpm?: IntFilter<"PracticeRecord"> | number
+    grossWpm?: IntNullableFilter<"PracticeRecord"> | number | null
+    cpm?: IntNullableFilter<"PracticeRecord"> | number | null
+    accuracy?: FloatFilter<"PracticeRecord"> | number
+    errors?: IntFilter<"PracticeRecord"> | number
+    timeSpent?: IntFilter<"PracticeRecord"> | number
+    createdAt?: DateTimeFilter<"PracticeRecord"> | Date | string
+  }
+
+  export type PracticeRecordOrderByWithRelationInput = {
+    id?: SortOrder
+    scholarNumber?: SortOrder
+    name?: SortOrderInput | SortOrder
+    language?: SortOrder
+    difficulty?: SortOrderInput | SortOrder
+    paragraphTitle?: SortOrderInput | SortOrder
+    netWpm?: SortOrder
+    grossWpm?: SortOrderInput | SortOrder
+    cpm?: SortOrderInput | SortOrder
+    accuracy?: SortOrder
+    errors?: SortOrder
+    timeSpent?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PracticeRecordWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PracticeRecordWhereInput | PracticeRecordWhereInput[]
+    OR?: PracticeRecordWhereInput[]
+    NOT?: PracticeRecordWhereInput | PracticeRecordWhereInput[]
+    scholarNumber?: StringFilter<"PracticeRecord"> | string
+    name?: StringNullableFilter<"PracticeRecord"> | string | null
+    language?: StringFilter<"PracticeRecord"> | string
+    difficulty?: StringNullableFilter<"PracticeRecord"> | string | null
+    paragraphTitle?: StringNullableFilter<"PracticeRecord"> | string | null
+    netWpm?: IntFilter<"PracticeRecord"> | number
+    grossWpm?: IntNullableFilter<"PracticeRecord"> | number | null
+    cpm?: IntNullableFilter<"PracticeRecord"> | number | null
+    accuracy?: FloatFilter<"PracticeRecord"> | number
+    errors?: IntFilter<"PracticeRecord"> | number
+    timeSpent?: IntFilter<"PracticeRecord"> | number
+    createdAt?: DateTimeFilter<"PracticeRecord"> | Date | string
+  }, "id">
+
+  export type PracticeRecordOrderByWithAggregationInput = {
+    id?: SortOrder
+    scholarNumber?: SortOrder
+    name?: SortOrderInput | SortOrder
+    language?: SortOrder
+    difficulty?: SortOrderInput | SortOrder
+    paragraphTitle?: SortOrderInput | SortOrder
+    netWpm?: SortOrder
+    grossWpm?: SortOrderInput | SortOrder
+    cpm?: SortOrderInput | SortOrder
+    accuracy?: SortOrder
+    errors?: SortOrder
+    timeSpent?: SortOrder
+    createdAt?: SortOrder
+    _count?: PracticeRecordCountOrderByAggregateInput
+    _avg?: PracticeRecordAvgOrderByAggregateInput
+    _max?: PracticeRecordMaxOrderByAggregateInput
+    _min?: PracticeRecordMinOrderByAggregateInput
+    _sum?: PracticeRecordSumOrderByAggregateInput
+  }
+
+  export type PracticeRecordScalarWhereWithAggregatesInput = {
+    AND?: PracticeRecordScalarWhereWithAggregatesInput | PracticeRecordScalarWhereWithAggregatesInput[]
+    OR?: PracticeRecordScalarWhereWithAggregatesInput[]
+    NOT?: PracticeRecordScalarWhereWithAggregatesInput | PracticeRecordScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PracticeRecord"> | string
+    scholarNumber?: StringWithAggregatesFilter<"PracticeRecord"> | string
+    name?: StringNullableWithAggregatesFilter<"PracticeRecord"> | string | null
+    language?: StringWithAggregatesFilter<"PracticeRecord"> | string
+    difficulty?: StringNullableWithAggregatesFilter<"PracticeRecord"> | string | null
+    paragraphTitle?: StringNullableWithAggregatesFilter<"PracticeRecord"> | string | null
+    netWpm?: IntWithAggregatesFilter<"PracticeRecord"> | number
+    grossWpm?: IntNullableWithAggregatesFilter<"PracticeRecord"> | number | null
+    cpm?: IntNullableWithAggregatesFilter<"PracticeRecord"> | number | null
+    accuracy?: FloatWithAggregatesFilter<"PracticeRecord"> | number
+    errors?: IntWithAggregatesFilter<"PracticeRecord"> | number
+    timeSpent?: IntWithAggregatesFilter<"PracticeRecord"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"PracticeRecord"> | Date | string
+  }
+
   export type AdminCreateInput = {
     id?: string
     username: string
@@ -9027,6 +10401,7 @@ export namespace Prisma {
     mandal: string
     semester: string
     avatarId: string
+    pin?: string | null
     createdAt?: Date | string
     lastSeenAt?: Date | string
     participations?: CompetitionParticipantCreateNestedManyWithoutPlayerSessionInput
@@ -9040,6 +10415,7 @@ export namespace Prisma {
     mandal: string
     semester: string
     avatarId: string
+    pin?: string | null
     createdAt?: Date | string
     lastSeenAt?: Date | string
     participations?: CompetitionParticipantUncheckedCreateNestedManyWithoutPlayerSessionInput
@@ -9053,6 +10429,7 @@ export namespace Prisma {
     mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
+    pin?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
     participations?: CompetitionParticipantUpdateManyWithoutPlayerSessionNestedInput
@@ -9066,6 +10443,7 @@ export namespace Prisma {
     mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
+    pin?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
     participations?: CompetitionParticipantUncheckedUpdateManyWithoutPlayerSessionNestedInput
@@ -9079,6 +10457,7 @@ export namespace Prisma {
     mandal: string
     semester: string
     avatarId: string
+    pin?: string | null
     createdAt?: Date | string
     lastSeenAt?: Date | string
   }
@@ -9091,6 +10470,7 @@ export namespace Prisma {
     mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
+    pin?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9103,6 +10483,7 @@ export namespace Prisma {
     mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
+    pin?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9474,6 +10855,118 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PracticeRecordCreateInput = {
+    id?: string
+    scholarNumber: string
+    name?: string | null
+    language: string
+    difficulty?: string | null
+    paragraphTitle?: string | null
+    netWpm: number
+    grossWpm?: number | null
+    cpm?: number | null
+    accuracy: number
+    errors: number
+    timeSpent: number
+    createdAt?: Date | string
+  }
+
+  export type PracticeRecordUncheckedCreateInput = {
+    id?: string
+    scholarNumber: string
+    name?: string | null
+    language: string
+    difficulty?: string | null
+    paragraphTitle?: string | null
+    netWpm: number
+    grossWpm?: number | null
+    cpm?: number | null
+    accuracy: number
+    errors: number
+    timeSpent: number
+    createdAt?: Date | string
+  }
+
+  export type PracticeRecordUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scholarNumber?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: StringFieldUpdateOperationsInput | string
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    paragraphTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    netWpm?: IntFieldUpdateOperationsInput | number
+    grossWpm?: NullableIntFieldUpdateOperationsInput | number | null
+    cpm?: NullableIntFieldUpdateOperationsInput | number | null
+    accuracy?: FloatFieldUpdateOperationsInput | number
+    errors?: IntFieldUpdateOperationsInput | number
+    timeSpent?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PracticeRecordUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scholarNumber?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: StringFieldUpdateOperationsInput | string
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    paragraphTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    netWpm?: IntFieldUpdateOperationsInput | number
+    grossWpm?: NullableIntFieldUpdateOperationsInput | number | null
+    cpm?: NullableIntFieldUpdateOperationsInput | number | null
+    accuracy?: FloatFieldUpdateOperationsInput | number
+    errors?: IntFieldUpdateOperationsInput | number
+    timeSpent?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PracticeRecordCreateManyInput = {
+    id?: string
+    scholarNumber: string
+    name?: string | null
+    language: string
+    difficulty?: string | null
+    paragraphTitle?: string | null
+    netWpm: number
+    grossWpm?: number | null
+    cpm?: number | null
+    accuracy: number
+    errors: number
+    timeSpent: number
+    createdAt?: Date | string
+  }
+
+  export type PracticeRecordUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scholarNumber?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: StringFieldUpdateOperationsInput | string
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    paragraphTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    netWpm?: IntFieldUpdateOperationsInput | number
+    grossWpm?: NullableIntFieldUpdateOperationsInput | number | null
+    cpm?: NullableIntFieldUpdateOperationsInput | number | null
+    accuracy?: FloatFieldUpdateOperationsInput | number
+    errors?: IntFieldUpdateOperationsInput | number
+    timeSpent?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PracticeRecordUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scholarNumber?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: StringFieldUpdateOperationsInput | string
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    paragraphTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    netWpm?: IntFieldUpdateOperationsInput | number
+    grossWpm?: NullableIntFieldUpdateOperationsInput | number | null
+    cpm?: NullableIntFieldUpdateOperationsInput | number | null
+    accuracy?: FloatFieldUpdateOperationsInput | number
+    errors?: IntFieldUpdateOperationsInput | number
+    timeSpent?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -9561,10 +11054,29 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type CompetitionParticipantListRelationFilter = {
     every?: CompetitionParticipantWhereInput
     some?: CompetitionParticipantWhereInput
     none?: CompetitionParticipantWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
   }
 
   export type CompetitionParticipantOrderByRelationAggregateInput = {
@@ -9579,6 +11091,7 @@ export namespace Prisma {
     mandal?: SortOrder
     semester?: SortOrder
     avatarId?: SortOrder
+    pin?: SortOrder
     createdAt?: SortOrder
     lastSeenAt?: SortOrder
   }
@@ -9591,6 +11104,7 @@ export namespace Prisma {
     mandal?: SortOrder
     semester?: SortOrder
     avatarId?: SortOrder
+    pin?: SortOrder
     createdAt?: SortOrder
     lastSeenAt?: SortOrder
   }
@@ -9603,8 +11117,26 @@ export namespace Prisma {
     mandal?: SortOrder
     semester?: SortOrder
     avatarId?: SortOrder
+    pin?: SortOrder
     createdAt?: SortOrder
     lastSeenAt?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -9643,11 +11175,6 @@ export namespace Prisma {
     every?: ResultWhereInput
     some?: ResultWhereInput
     none?: ResultWhereInput
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type ResultOrderByRelationAggregateInput = {
@@ -9954,6 +11481,72 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type PracticeRecordCountOrderByAggregateInput = {
+    id?: SortOrder
+    scholarNumber?: SortOrder
+    name?: SortOrder
+    language?: SortOrder
+    difficulty?: SortOrder
+    paragraphTitle?: SortOrder
+    netWpm?: SortOrder
+    grossWpm?: SortOrder
+    cpm?: SortOrder
+    accuracy?: SortOrder
+    errors?: SortOrder
+    timeSpent?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PracticeRecordAvgOrderByAggregateInput = {
+    netWpm?: SortOrder
+    grossWpm?: SortOrder
+    cpm?: SortOrder
+    accuracy?: SortOrder
+    errors?: SortOrder
+    timeSpent?: SortOrder
+  }
+
+  export type PracticeRecordMaxOrderByAggregateInput = {
+    id?: SortOrder
+    scholarNumber?: SortOrder
+    name?: SortOrder
+    language?: SortOrder
+    difficulty?: SortOrder
+    paragraphTitle?: SortOrder
+    netWpm?: SortOrder
+    grossWpm?: SortOrder
+    cpm?: SortOrder
+    accuracy?: SortOrder
+    errors?: SortOrder
+    timeSpent?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PracticeRecordMinOrderByAggregateInput = {
+    id?: SortOrder
+    scholarNumber?: SortOrder
+    name?: SortOrder
+    language?: SortOrder
+    difficulty?: SortOrder
+    paragraphTitle?: SortOrder
+    netWpm?: SortOrder
+    grossWpm?: SortOrder
+    cpm?: SortOrder
+    accuracy?: SortOrder
+    errors?: SortOrder
+    timeSpent?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PracticeRecordSumOrderByAggregateInput = {
+    netWpm?: SortOrder
+    grossWpm?: SortOrder
+    cpm?: SortOrder
+    accuracy?: SortOrder
+    errors?: SortOrder
+    timeSpent?: SortOrder
+  }
+
   export type CompetitionCreateNestedManyWithoutAdminInput = {
     create?: XOR<CompetitionCreateWithoutAdminInput, CompetitionUncheckedCreateWithoutAdminInput> | CompetitionCreateWithoutAdminInput[] | CompetitionUncheckedCreateWithoutAdminInput[]
     connectOrCreate?: CompetitionCreateOrConnectWithoutAdminInput | CompetitionCreateOrConnectWithoutAdminInput[]
@@ -10016,6 +11609,10 @@ export namespace Prisma {
     connectOrCreate?: CompetitionParticipantCreateOrConnectWithoutPlayerSessionInput | CompetitionParticipantCreateOrConnectWithoutPlayerSessionInput[]
     createMany?: CompetitionParticipantCreateManyPlayerSessionInputEnvelope
     connect?: CompetitionParticipantWhereUniqueInput | CompetitionParticipantWhereUniqueInput[]
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type CompetitionParticipantUpdateManyWithoutPlayerSessionNestedInput = {
@@ -10395,6 +11992,37 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type NestedIntNullableFilter<$PrismaModel = never> = {
@@ -10915,6 +12543,7 @@ export namespace Prisma {
     mandal: string
     semester: string
     avatarId: string
+    pin?: string | null
     createdAt?: Date | string
     lastSeenAt?: Date | string
   }
@@ -10927,6 +12556,7 @@ export namespace Prisma {
     mandal: string
     semester: string
     avatarId: string
+    pin?: string | null
     createdAt?: Date | string
     lastSeenAt?: Date | string
   }
@@ -11037,6 +12667,7 @@ export namespace Prisma {
     mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
+    pin?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11049,6 +12680,7 @@ export namespace Prisma {
     mandal?: StringFieldUpdateOperationsInput | string
     semester?: StringFieldUpdateOperationsInput | string
     avatarId?: StringFieldUpdateOperationsInput | string
+    pin?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

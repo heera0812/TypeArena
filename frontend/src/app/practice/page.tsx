@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, RefreshCw, Play, Pause, Star } from "lucide-react";
+import { BookOpen, RefreshCw, Play, Pause, Star, CheckCircle2 } from "lucide-react";
 import { API_URL } from "@/lib/api";
 
 // ── Grapheme segmentation ──
@@ -223,6 +224,8 @@ export default function PracticeMode() {
   const [timeElapsed, setTimeElapsed] = useState(0);
 
   const [lastKeyState, setLastKeyState] = useState<{ key: string; correct: boolean } | null>(null);
+  const [savedStudentName, setSavedStudentName] = useState<string | null>(null);
+  const [hasSaved, setHasSaved] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const startTimeRef = useRef<number | null>(null);
@@ -233,6 +236,16 @@ export default function PracticeMode() {
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setParagraphs(data); })
       .catch(() => {});
+
+    try {
+      const studentRaw = localStorage.getItem("typearena_student") || localStorage.getItem("typearena_player");
+      if (studentRaw) {
+        const studentObj = JSON.parse(studentRaw);
+        if (studentObj?.name) setSavedStudentName(studentObj.name);
+      }
+    } catch {
+      // ignore
+    }
   }, []);
 
   const setTarget = useCallback((text: string) => {
@@ -247,6 +260,7 @@ export default function PracticeMode() {
     setHasStarted(false);
     setHasFinished(false);
     setShowConfetti(false);
+    setHasSaved(false);
     setWpm(0);
     setAccuracy(100);
     setErrors(0);
@@ -270,6 +284,40 @@ export default function PracticeMode() {
     if (para) setTarget(para.content);
   };
 
+  const savePracticeToBackend = async (finalWpm: number, finalAcc: number, finalErrors: number, duration: number) => {
+    try {
+      const studentRaw = localStorage.getItem("typearena_student") || localStorage.getItem("typearena_player");
+      if (!studentRaw) return;
+      const studentObj = JSON.parse(studentRaw);
+      if (!studentObj?.scholarNumber) return;
+
+      const currentPara = paragraphs.find((p: any) => p.id === selectedParagraph);
+      const res = await fetch(`${API_URL}/api/practice/records`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          scholarNumber: studentObj.scholarNumber,
+          name: studentObj.name,
+          language,
+          difficulty: currentPara?.difficulty || "MEDIUM",
+          paragraphTitle: currentPara?.title || (language === "HI" ? "Hindi Practice" : "English Practice"),
+          netWpm: finalWpm,
+          grossWpm: finalWpm,
+          cpm: finalWpm * 5,
+          accuracy: finalAcc,
+          errors: finalErrors,
+          timeSpent: duration
+        })
+      });
+      if (res.ok) {
+        setSavedStudentName(studentObj.name || studentObj.scholarNumber);
+        setHasSaved(true);
+      }
+    } catch (err) {
+      console.error("Failed to save practice record:", err);
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (hasFinished) return;
 
@@ -287,7 +335,7 @@ export default function PracticeMode() {
     }
 
     setInputText(val);
-    calcMetrics(val);
+    const currentMetrics = calcMetrics(val);
 
     // Track last key for keyboard visualization
     const typedG = getGraphemes(val);
@@ -302,11 +350,13 @@ export default function PracticeMode() {
       setHasFinished(true);
       setShowConfetti(true);
       if (timerRef.current) clearInterval(timerRef.current);
+      const elapsedSec = Math.max(1, Math.floor((Date.now() - (startTimeRef.current || Date.now())) / 1000));
+      savePracticeToBackend(currentMetrics.netWpm, currentMetrics.accuracy, currentMetrics.errors, elapsedSec);
     }
   };
 
   const calcMetrics = (val: string) => {
-    if (!startTimeRef.current) return;
+    if (!startTimeRef.current) return { netWpm: 0, accuracy: 100, errors: 0 };
     const typedG = getGraphemes(val);
     let correct = 0;
     for (let i = 0; i < typedG.length; i++) {
@@ -322,9 +372,11 @@ export default function PracticeMode() {
     }
     const safeNetWpm = isNaN(netWpm) || !isFinite(netWpm) ? 0 : Math.round(netWpm);
     const acc = total > 0 ? Math.round((correct / total) * 100) : 100;
+    const safeAcc = isNaN(acc) || !isFinite(acc) ? 100 : acc;
     setWpm(safeNetWpm);
-    setAccuracy(isNaN(acc) || !isFinite(acc) ? 100 : acc);
+    setAccuracy(safeAcc);
     setErrors(errs);
+    return { netWpm: safeNetWpm, accuracy: safeAcc, errors: errs };
   };
 
   const targetLen = targetGraphemes.length > 0 ? targetGraphemes.length : 1;
@@ -454,12 +506,27 @@ export default function PracticeMode() {
               <h2 className="text-3xl font-black text-slate-900">Excellent!</h2>
               <StarRating wpm={wpm} />
               <p className="text-slate-500 mt-2 font-medium">{wpm} WPM · {accuracy}% Accuracy · {errors} Errors</p>
-              <button
-                onClick={() => pickRandom()}
-                className="mt-6 px-8 py-3 bg-[#1d61e8] hover:bg-[#1a56db] text-white font-extrabold rounded-full shadow-lg shadow-blue-500/25 transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide text-xs"
-              >
-                Try Another
-              </button>
+
+              {hasSaved && (
+                <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Practice drill saved to your records {savedStudentName ? `(${savedStudentName})` : ""}</span>
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center justify-center gap-3 mt-5">
+                <button
+                  onClick={() => pickRandom()}
+                  className="px-7 py-2.5 bg-[#1d61e8] hover:bg-[#1a56db] text-white font-extrabold rounded-full shadow-lg shadow-blue-500/25 transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide text-xs cursor-pointer"
+                >
+                  Try Another
+                </button>
+                <Link href="/records">
+                  <button className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-full transition-colors uppercase tracking-wide text-xs cursor-pointer">
+                    View Past Records
+                  </button>
+                </Link>
+              </div>
             </motion.div>
           </AnimatePresence>
         ) : !hasStarted ? (

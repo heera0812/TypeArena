@@ -57,13 +57,18 @@ export default function LandingPage() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-1 animate-slide-up delay-100">
           <Link href="/register">
-            <button className="group px-9 py-3.5 text-base font-bold bg-[#1d61e8] hover:bg-[#1a56db] text-white rounded-full shadow-lg shadow-blue-500/25 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+            <button className="group px-8 py-3.5 text-base font-bold bg-[#1d61e8] hover:bg-[#1a56db] text-white rounded-full shadow-lg shadow-blue-500/25 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
               <Zap className="w-5 h-5 fill-white" /> Join Competition
             </button>
           </Link>
           <Link href="/practice">
-            <button className="group px-9 py-3.5 text-base font-bold bg-white hover:bg-blue-50 text-[#1d61e8] border-2 border-[#1d61e8] rounded-full transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-sm">
+            <button className="group px-8 py-3.5 text-base font-bold bg-white hover:bg-blue-50 text-[#1d61e8] border-2 border-[#1d61e8] rounded-full transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-sm cursor-pointer">
               <Keyboard className="w-5 h-5" /> Practice Mode
+            </button>
+          </Link>
+          <Link href="/login">
+            <button className="group px-8 py-3.5 text-base font-bold bg-blue-50 hover:bg-blue-100 text-[#1d61e8] border border-blue-200 rounded-full transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-xs cursor-pointer">
+              <BarChart2 className="w-5 h-5" /> My Records
             </button>
           </Link>
         </div>

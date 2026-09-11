@@ -3,22 +3,33 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Home, UserCheck, Keyboard, BarChart2, Trophy } from "lucide-react";
+import { Home, UserCheck, Keyboard, BarChart2, Trophy, User, LogIn, ClipboardList } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [studentUser, setStudentUser] = useState<any>(null);
 
   useEffect(() => {
-    // Check if admin is authenticated
-    const checkAdmin = () => {
-      const token = localStorage.getItem("typearena_admin_token");
-      setIsAdminLoggedIn(!!token);
+    const checkAuth = () => {
+      const adminToken = localStorage.getItem("typearena_admin_token");
+      setIsAdminLoggedIn(!!adminToken);
+
+      try {
+        const studentRaw = localStorage.getItem("typearena_student");
+        if (studentRaw) {
+          setStudentUser(JSON.parse(studentRaw));
+        } else {
+          setStudentUser(null);
+        }
+      } catch {
+        setStudentUser(null);
+      }
     };
 
-    checkAdmin();
-    window.addEventListener("storage", checkAdmin);
-    return () => window.removeEventListener("storage", checkAdmin);
+    checkAuth();
+    window.addEventListener("storage", checkAuth);
+    return () => window.removeEventListener("storage", checkAuth);
   }, [pathname]);
 
   const navItems = [
@@ -27,6 +38,9 @@ export default function Navbar() {
     { label: "Practice", href: "/practice", icon: Keyboard },
     { label: "Results", href: "/results", icon: BarChart2 },
     { label: "Hall of Fame", href: "/hall-of-fame", icon: Trophy, isGold: true },
+    studentUser
+      ? { label: "My Records", href: "/records", icon: ClipboardList, isStudent: true }
+      : { label: "Student Login", href: "/login", icon: LogIn, isStudent: true },
   ];
 
   return (
@@ -72,6 +86,29 @@ export default function Navbar() {
                   >
                     <Icon className="w-4 h-4 text-amber-500" />
                     <span>{item.label}</span>
+                  </Link>
+                );
+              }
+
+              if (item.isStudent) {
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`ml-2 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 font-bold transition-all text-xs ${
+                      isActive
+                        ? "bg-[#1d61e8] text-white shadow-sm"
+                        : studentUser
+                        ? "bg-blue-50 text-[#1d61e8] border border-blue-200/80 hover:bg-blue-100"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    }`}
+                  >
+                    {studentUser?.avatarId ? (
+                      <span className="text-sm">{studentUser.avatarId}</span>
+                    ) : (
+                      <Icon className="w-3.5 h-3.5" />
+                    )}
+                    <span>{studentUser ? (studentUser.name?.split(" ")[0] || "My Records") : item.label}</span>
                   </Link>
                 );
               }
