@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Trophy, Medal, Crown, Star } from "lucide-react";
 import { useEffect, useState } from "react";
-import { API_URL } from "@/lib/api";
+import { getApiUrl } from "@/lib/api";
 
 const LANG_TABS = [
   { label: "All", value: "" },
@@ -20,8 +20,8 @@ export default function HallOfFame() {
   useEffect(() => {
     setLoading(true);
     const url = activeLang
-      ? `${API_URL}/api/hall-of-fame?language=${activeLang}`
-      : `${API_URL}/api/hall-of-fame`;
+      ? `${getApiUrl()}/api/hall-of-fame?language=${activeLang}`
+      : `${getApiUrl()}/api/hall-of-fame`;
     fetch(url)
       .then(r => r.json())
       .then(data => {

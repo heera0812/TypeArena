@@ -3,7 +3,7 @@
 import { useState, Suspense, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { API_URL } from "@/lib/api";
+import { getApiUrl } from "@/lib/api";
 import { Mandal } from "@typearena/shared";
 
 export default function Register() {
@@ -43,7 +43,7 @@ function RegisterContent() {
   // Function to check for active room
   const checkForRoomAndJoin = async () => {
     try {
-      const compsRes = await fetch(`${API_URL}/api/competitions`);
+      const compsRes = await fetch(`${getApiUrl()}/api/competitions`);
       const comps = await compsRes.json();
       const activeComp = comps.find((c: any) => c.status === "LOBBY_OPEN");
       
@@ -69,7 +69,7 @@ function RegisterContent() {
         semester: formData.semester,
         avatarId: formData.avatarId
       };
-      const res = await fetch(`${API_URL}/api/players`, {
+      const res = await fetch(`${getApiUrl()}/api/players`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { io, Socket } from "socket.io-client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { API_URL, WS_URL } from "@/lib/api";
+import { getApiUrl, getWsUrl } from "@/lib/api";
 import { Pause, Play, Square, Flag } from "lucide-react";
 
 // Socket is kept in a ref (per component instance) to avoid stale module-level shared state
@@ -83,7 +83,7 @@ function LobbyContent() {
       return;
     }
 
-    fetch(`${API_URL}/api/competitions/${competitionId}`)
+    fetch(`${getApiUrl()}/api/competitions/${competitionId}`)
       .then(r => r.json())
       .then((comp: any) => {
         if (comp?.paragraph?.content) {
@@ -105,7 +105,7 @@ function LobbyContent() {
     const sessionToken = localStorage.getItem("typearena_session");
     const adminToken = localStorage.getItem("typearena_admin_token");
 
-    socketRef.current = io(WS_URL, {
+    socketRef.current = io(getWsUrl(), {
       auth: isSpectator ? { adminToken } : { sessionToken },
       reconnection: true,
       reconnectionAttempts: 10,

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserCheck, Lock, ArrowRight, Sparkles, ShieldCheck, Keyboard, AlertCircle } from "lucide-react";
-import { API_URL } from "@/lib/api";
+import { getApiUrl } from "@/lib/api";
 
 function FloatingKey({ char, className }: { char: string; className: string }) {
   return (
@@ -58,7 +58,7 @@ export default function StudentLoginPage() {
       };
       if (pin) payload.pin = pin.trim();
 
-      const res = await fetch(`${API_URL}/api/auth/player-login`, {
+      const res = await fetch(`${getApiUrl()}/api/auth/player-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

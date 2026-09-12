@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Trophy, ChevronLeft, Download, FileSpreadsheet } from "lucide-react";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { API_URL } from "@/lib/api";
+import { getApiUrl } from "@/lib/api";
 
 export default function Results() {
   return (
@@ -30,7 +30,7 @@ function ResultsContent() {
 
   useEffect(() => {
     // Fetch finished competitions for history selector
-    fetch(`${API_URL}/api/competitions`)
+    fetch(`${getApiUrl()}/api/competitions`)
       .then(r => r.json())
       .then(list => {
         if (Array.isArray(list)) {
@@ -47,8 +47,8 @@ function ResultsContent() {
     const fetchResults = async () => {
       try {
         const url = competitionId
-          ? `${API_URL}/api/results?competitionId=${competitionId}`
-          : `${API_URL}/api/results`;
+          ? `${getApiUrl()}/api/results?competitionId=${competitionId}`
+          : `${getApiUrl()}/api/results`;
         const res = await fetch(url);
         const data = await res.json();
         if (Array.isArray(data)) {
@@ -82,7 +82,7 @@ function ResultsContent() {
     
     if (competitionId) {
       // Initial fetch to get competition name and status
-      fetch(`${API_URL}/api/competitions/${competitionId}`)
+      fetch(`${getApiUrl()}/api/competitions/${competitionId}`)
         .then(r => r.json())
         .then(c => {
           if (c?.name) setCompetitionName(c.name);
@@ -93,7 +93,7 @@ function ResultsContent() {
               interval = setInterval(() => {
                 fetchResults();
                 // Check if the competition status has updated to FINISHED
-                fetch(`${API_URL}/api/competitions/${competitionId}`)
+                fetch(`${getApiUrl()}/api/competitions/${competitionId}`)
                   .then(res => res.json())
                   .then(updatedComp => {
                     if (updatedComp?.status) {
@@ -152,8 +152,8 @@ function ResultsContent() {
   const exportToExcel = () => {
     const token = typeof window !== "undefined" ? localStorage.getItem("typearena_admin_token") || "" : "";
     const url = competitionId
-      ? `${API_URL}/api/reports/excel?competitionId=${competitionId}&token=${token}`
-      : `${API_URL}/api/reports/excel?token=${token}`;
+      ? `${getApiUrl()}/api/reports/excel?competitionId=${competitionId}&token=${token}`
+      : `${getApiUrl()}/api/reports/excel?token=${token}`;
     window.open(url, "_blank");
   };
 

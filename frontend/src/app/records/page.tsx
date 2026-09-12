@@ -20,9 +20,10 @@ import {
   TrendingUp,
   BarChart2,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  ShieldCheck
 } from "lucide-react";
-import { API_URL } from "@/lib/api";
+import { getApiUrl } from "@/lib/api";
 
 function StarRating({ wpm }: { wpm: number }) {
   const getStars = () => {
@@ -97,7 +98,7 @@ export default function StudentRecordsPage() {
   const fetchRecords = useCallback(async (scholarNo: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/players/${scholarNo}/records`);
+      const res = await fetch(`${getApiUrl()}/api/players/${scholarNo}/records`);
       if (res.ok) {
         const json = await res.json();
         setData(json);
@@ -148,7 +149,7 @@ export default function StudentRecordsPage() {
     setPinLoading(true);
     setPinMessage(null);
     try {
-      const res = await fetch(`${API_URL}/api/auth/player-pin`, {
+      const res = await fetch(`${getApiUrl()}/api/auth/player-pin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scholarNumber: student.scholarNumber, pin: newPin.trim() }),

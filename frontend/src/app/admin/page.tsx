@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Lock, User, Eye, EyeOff, ShieldCheck } from "lucide-react";
 
-import { API_URL } from "@/lib/api";
+import { getApiUrl } from "@/lib/api";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function AdminLogin() {
     setIsSubmitting(true);
     
     try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
+      const res = await fetch(`${getApiUrl()}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)

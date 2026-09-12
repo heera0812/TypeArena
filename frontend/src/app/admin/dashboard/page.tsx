@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2, FileSpreadsheet, ExternalLink, Play, Eye, Trophy } from "lucide-react";
-import { API_URL } from "@/lib/api";
+import { getApiUrl } from "@/lib/api";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -42,7 +42,7 @@ export default function AdminDashboard() {
 
   const fetchCompetitions = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/competitions`, {
+      const res = await fetch(`${getApiUrl()}/api/competitions`, {
         headers: getHeaders(),
         credentials: "include"
       });
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
 
   const fetchParagraphs = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/paragraphs`, {
+      const res = await fetch(`${getApiUrl()}/api/paragraphs`, {
         headers: getHeaders(),
         credentials: "include"
       });
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/api/competitions`, {
+      const res = await fetch(`${getApiUrl()}/api/competitions`, {
         method: "POST", headers: getHeaders(), credentials: "include",
         body: JSON.stringify(newComp)
       });
@@ -86,7 +86,7 @@ export default function AdminDashboard() {
 
   const updateStatus = async (id: string, status: string) => {
     try {
-      const res = await fetch(`${API_URL}/api/competitions/${id}/status`, {
+      const res = await fetch(`${getApiUrl()}/api/competitions/${id}/status`, {
         method: "PATCH", headers: getHeaders(), credentials: "include",
         body: JSON.stringify({ status })
       });
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/api/paragraphs`, {
+      const res = await fetch(`${getApiUrl()}/api/paragraphs`, {
         method: "POST", headers: getHeaders(), credentials: "include",
         body: JSON.stringify(newParagraph)
       });
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
   const saveParagraphEdit = async () => {
     if (!editingParagraph) return;
     try {
-      await fetch(`${API_URL}/api/paragraphs/${editingParagraph.id}`, {
+      await fetch(`${getApiUrl()}/api/paragraphs/${editingParagraph.id}`, {
         method: "PATCH", headers: getHeaders(), credentials: "include",
         body: JSON.stringify({
           title: editingParagraph.title,
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
     setConfirmParaId(null);
     setDeleteError(null);
     try {
-      const res = await fetch(`${API_URL}/api/paragraphs/${id}`, {
+      const res = await fetch(`${getApiUrl()}/api/paragraphs/${id}`, {
         method: "DELETE", headers: getHeaders(), credentials: "include"
       });
       if (!res.ok) {
@@ -169,7 +169,7 @@ export default function AdminDashboard() {
     setConfirmCompId(null);
     setDeleteError(null);
     try {
-      const res = await fetch(`${API_URL}/api/competitions/${id}`, {
+      const res = await fetch(`${getApiUrl()}/api/competitions/${id}`, {
         method: "DELETE", headers: getHeaders(), credentials: "include"
       });
       if (!res.ok) {
@@ -344,7 +344,7 @@ export default function AdminDashboard() {
                           <Trophy className="w-4 h-4" /> Results
                         </a>
                         <a
-                          href={`${API_URL}/api/reports/excel?competitionId=${comp.id}&token=${typeof window !== "undefined" ? localStorage.getItem("typearena_admin_token") || "" : ""}`}
+                          href={`${getApiUrl()}/api/reports/excel?competitionId=${comp.id}&token=${typeof window !== "undefined" ? localStorage.getItem("typearena_admin_token") || "" : ""}`}
                           target="_blank"
                           className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm flex items-center gap-1"
                         >

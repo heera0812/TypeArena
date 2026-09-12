@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, RefreshCw, Play, Pause, Star, CheckCircle2 } from "lucide-react";
-import { API_URL } from "@/lib/api";
+import { getApiUrl } from "@/lib/api";
 
 // ── Grapheme segmentation ──
 function getGraphemes(text: string): string[] {
@@ -232,7 +232,7 @@ export default function PracticeMode() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/paragraphs`)
+    fetch(`${getApiUrl()}/api/paragraphs`)
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setParagraphs(data); })
       .catch(() => {});
@@ -292,7 +292,7 @@ export default function PracticeMode() {
       if (!studentObj?.scholarNumber) return;
 
       const currentPara = paragraphs.find((p: any) => p.id === selectedParagraph);
-      const res = await fetch(`${API_URL}/api/practice/records`, {
+      const res = await fetch(`${getApiUrl()}/api/practice/records`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
