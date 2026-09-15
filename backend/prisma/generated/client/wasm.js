@@ -87,6 +87,9 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -182,6 +185,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -235,7 +243,7 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "sqlite",
+  "activeProvider": "postgresql",
   "postinstall": false,
   "inlineDatasources": {
     "db": {
@@ -245,8 +253,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/client\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Admin {\n  id           String   @id @default(uuid())\n  username     String   @unique\n  passwordHash String\n  createdAt    DateTime @default(now())\n\n  // Relations\n  competitions Competition[]\n}\n\nmodel PlayerSession {\n  id            String   @id @default(uuid())\n  sessionToken  String   @unique\n  name          String\n  scholarNumber String\n  mandal        String\n  semester      String\n  avatarId      String\n  pin           String?\n  createdAt     DateTime @default(now())\n  lastSeenAt    DateTime @default(now())\n\n  // Relations\n  participations CompetitionParticipant[]\n}\n\nmodel Competition {\n  id          String    @id @default(uuid())\n  name        String\n  roomCode    String    @unique\n  language    String // \"EN\" or \"HI\"\n  gameMode    String // \"RACE\", \"SPRINT\", \"ACCURACY\"\n  difficulty  String // \"EASY\", \"MEDIUM\", \"HARD\"\n  duration    Int? // in seconds\n  paragraphId String\n  status      String // \"DRAFT\", \"LOBBY_OPEN\", \"COUNTDOWN\", \"ACTIVE\", \"PAUSED\", \"FINISHED\", \"CANCELLED\"\n  createdBy   String\n  startAt     DateTime?\n  endedAt     DateTime?\n  createdAt   DateTime  @default(now())\n\n  // Relations\n  admin        Admin                    @relation(fields: [createdBy], references: [id])\n  paragraph    Paragraph                @relation(fields: [paragraphId], references: [id])\n  participants CompetitionParticipant[]\n  results      Result[]\n}\n\nmodel CompetitionParticipant {\n  id               String    @id @default(uuid())\n  competitionId    String\n  playerSessionId  String\n  ready            Boolean   @default(false)\n  connectionStatus String // \"ONLINE\", \"OFFLINE\"\n  joinedAt         DateTime  @default(now())\n  finishedAt       DateTime?\n\n  // Relations\n  competition   Competition   @relation(fields: [competitionId], references: [id])\n  playerSession PlayerSession @relation(fields: [playerSessionId], references: [id])\n  results       Result[]\n\n  @@unique([competitionId, playerSessionId])\n}\n\nmodel Paragraph {\n  id         String   @id @default(uuid())\n  title      String\n  content    String\n  language   String // \"EN\" or \"HI\"\n  difficulty String // \"EASY\", \"MEDIUM\", \"HARD\"\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  // Relations\n  competitions Competition[]\n}\n\nmodel Result {\n  id                   String   @id @default(uuid())\n  competitionId        String\n  participantId        String\n  grossWpm             Int\n  netWpm               Int\n  cpm                  Int\n  accuracy             Float\n  errors               Int\n  completionPercentage Float\n  finalRank            Int?\n  finishTime           Int? // Time taken in ms\n  createdAt            DateTime @default(now())\n\n  // Relations\n  competition Competition            @relation(fields: [competitionId], references: [id])\n  participant CompetitionParticipant @relation(fields: [participantId], references: [id])\n}\n\nmodel PracticeRecord {\n  id             String   @id @default(uuid())\n  scholarNumber  String\n  name           String?\n  language       String // \"EN\" or \"HI\"\n  difficulty     String? // \"EASY\", \"MEDIUM\", \"HARD\"\n  paragraphTitle String?\n  netWpm         Int\n  grossWpm       Int?\n  cpm            Int?\n  accuracy       Float\n  errors         Int\n  timeSpent      Int // Time spent in seconds\n  createdAt      DateTime @default(now())\n\n  @@index([scholarNumber])\n}\n",
-  "inlineSchemaHash": "52aaff9922a3bddc86f720a9a41bc221aaf04a97101c40efb132cbcb8ee37b3c",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Admin {\n  id           String   @id @default(uuid())\n  username     String   @unique\n  passwordHash String\n  createdAt    DateTime @default(now())\n\n  // Relations\n  competitions Competition[]\n}\n\nmodel PlayerSession {\n  id            String   @id @default(uuid())\n  sessionToken  String   @unique\n  name          String\n  scholarNumber String\n  mandal        String\n  semester      String\n  avatarId      String\n  pin           String?\n  createdAt     DateTime @default(now())\n  lastSeenAt    DateTime @default(now())\n\n  // Relations\n  participations CompetitionParticipant[]\n}\n\nmodel Competition {\n  id          String    @id @default(uuid())\n  name        String\n  roomCode    String    @unique\n  language    String // \"EN\" or \"HI\"\n  gameMode    String // \"RACE\", \"SPRINT\", \"ACCURACY\"\n  difficulty  String // \"EASY\", \"MEDIUM\", \"HARD\"\n  duration    Int? // in seconds\n  paragraphId String\n  status      String // \"DRAFT\", \"LOBBY_OPEN\", \"COUNTDOWN\", \"ACTIVE\", \"PAUSED\", \"FINISHED\", \"CANCELLED\"\n  createdBy   String\n  startAt     DateTime?\n  endedAt     DateTime?\n  createdAt   DateTime  @default(now())\n\n  // Relations\n  admin        Admin                    @relation(fields: [createdBy], references: [id])\n  paragraph    Paragraph                @relation(fields: [paragraphId], references: [id])\n  participants CompetitionParticipant[]\n  results      Result[]\n}\n\nmodel CompetitionParticipant {\n  id               String    @id @default(uuid())\n  competitionId    String\n  playerSessionId  String\n  ready            Boolean   @default(false)\n  connectionStatus String // \"ONLINE\", \"OFFLINE\"\n  joinedAt         DateTime  @default(now())\n  finishedAt       DateTime?\n\n  // Relations\n  competition   Competition   @relation(fields: [competitionId], references: [id])\n  playerSession PlayerSession @relation(fields: [playerSessionId], references: [id])\n  results       Result[]\n\n  @@unique([competitionId, playerSessionId])\n}\n\nmodel Paragraph {\n  id         String   @id @default(uuid())\n  title      String\n  content    String\n  language   String // \"EN\" or \"HI\"\n  difficulty String // \"EASY\", \"MEDIUM\", \"HARD\"\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  // Relations\n  competitions Competition[]\n}\n\nmodel Result {\n  id                   String   @id @default(uuid())\n  competitionId        String\n  participantId        String\n  grossWpm             Int\n  netWpm               Int\n  cpm                  Int\n  accuracy             Float\n  errors               Int\n  completionPercentage Float\n  finalRank            Int?\n  finishTime           Int? // Time taken in ms\n  createdAt            DateTime @default(now())\n\n  // Relations\n  competition Competition            @relation(fields: [competitionId], references: [id])\n  participant CompetitionParticipant @relation(fields: [participantId], references: [id])\n}\n\nmodel PracticeRecord {\n  id             String   @id @default(uuid())\n  scholarNumber  String\n  name           String?\n  language       String // \"EN\" or \"HI\"\n  difficulty     String? // \"EASY\", \"MEDIUM\", \"HARD\"\n  paragraphTitle String?\n  netWpm         Int\n  grossWpm       Int?\n  cpm            Int?\n  accuracy       Float\n  errors         Int\n  timeSpent      Int // Time spent in seconds\n  createdAt      DateTime @default(now())\n\n  @@index([scholarNumber])\n}\n",
+  "inlineSchemaHash": "a485edea9c7901a1aa223ec113b7e5321b48e13fd8124d41c5a023490940d1e6",
   "copyEngine": true
 }
 config.dirname = '/'
